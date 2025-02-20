@@ -1,0 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+
+footer {
+  background: linear-gradient(to right, #b6c4f5, #e2e7f8);
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  position: fixed;
+  bottom: 0;
+  padding: 5px;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  font-family: "Inter", sans-serif;
+  text-align: center;
+}
+
+.copyright-notice {
+  flex: 1;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  footer {
+    font-size: 0.8rem;
+    padding: 15px;
+    text-align: center;
+  }
+}
