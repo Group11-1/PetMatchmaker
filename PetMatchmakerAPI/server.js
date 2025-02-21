@@ -20,6 +20,57 @@ app.get("/api/test-db", (req, res) => {
   });
 });
 
+// Helper function to hash the password
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
+// Helper function to check if username/email exists
+const checkIfExists = (username, email) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      "SELECT * FROM users WHERE username = ? OR email = ?",
+      [username, email],
+      (err, result) => {
+        if (err) reject("Database error");
+        resolve(result.length > 0);
+      }
+    );
+  });
+};
+
+// Sign up route (auto-login)
+app.post("/api/signup", async (req, res) => {
+  const { first_name, last_name, email, username, password } = req.body;
+
+  // Hash the password before saving to the database
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Insert user into the database
+  const query = `
+    INSERT INTO users (first_name, last_name, email, username, password, role_id, profile_completed, access_level)
+    VALUES (?, ?, ?, ?, ?, 2, 0, 'standard')`;
+  db.query(
+    query,
+    [first_name, last_name, email, username, hashedPassword],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting user:", err);
+        return res.status(500).json({ message: "Error signing up" });
+      }
+
+      // Fetch the newly created user details (including the id for JWT)
+      const userId = result.insertId;
+      const token = jwt.sign({ userId }, "your_jwt_secret", {
+        expiresIn: "1h",
+      });
+
+      // Send back the token and user role
+      res.json({ token, role: 2 }); // role 2 (adopter by default)
+    }
+  );
+});
+
 // User login route (for general site access)
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;

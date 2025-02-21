@@ -22,6 +22,7 @@ export class AuthService {
   // Check if the user is logged in
   isLoggedIn(): boolean {
     const token = localStorage.getItem('jwt_token');
+    console.log('Token from localStorage:', token); // Add this for debugging
     return !!token;
   }
 
@@ -34,6 +35,11 @@ export class AuthService {
   saveToken(token: string): void {
     localStorage.setItem('jwt_token', token);
     this.loggedInSubject.next(true);
+  }
+
+  // Sign Up & Auto Login
+  signup(userData: any): Observable<any> {
+    return this.http.post<any>('http://localhost:3000/api/signup', userData);
   }
 
   // Clear token on logout

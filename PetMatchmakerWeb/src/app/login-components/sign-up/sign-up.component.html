@@ -4,16 +4,54 @@
       ><fa-icon [icon]="faArrowLeft"></fa-icon> Back</a
     >
     <h2>Sign Up</h2>
-    <form>
+    <form (ngSubmit)="onSubmit()" [formGroup]="signupForm">
       <div class="name">
-        <input type="name" placeholder="First Name" required />
-        <input type="name" placeholder="Last Name" required />
+        <input
+          id="first_name"
+          formControlName="first_name"
+          type="text"
+          placeholder="First Name"
+          required
+        />
+        <input
+          id="last_name"
+          formControlName="last_name"
+          type="text"
+          placeholder="Last Name"
+          required
+        />
       </div>
-      <input type="email" placeholder="Email Address" required />
-      <input type="username" placeholder="Username" required />
-      <input type="password" placeholder="Password" required />
-      <input type="password" placeholder="Confirm Password" required />
-      <button type="submit">Let's Get Started!</button>
+      <input
+        id="email"
+        formControlName="email"
+        type="text"
+        placeholder="Email Address"
+        required
+      />
+      <input
+        id="username"
+        formControlName="username"
+        type="text"
+        placeholder="Username"
+        required
+      />
+      <input
+        id="password"
+        formControlName="password"
+        type="password"
+        placeholder="Password"
+        required
+      />
+      <input
+        id="confirm_password"
+        formControlName="confirm_password"
+        type="password"
+        placeholder="Confirm Password"
+        required
+      />
+      <button type="submit" [disabled]="signupForm.invalid">
+        Let's Get Started!
+      </button>
     </form>
   </div>
   <div class="right-panel">
