@@ -26,7 +26,6 @@ input {
   font-size: 16px;
 }
 
-/* Specific styling for the username input */
 input[type="username"] {
   background-color: white;
   color: #000;
@@ -34,7 +33,6 @@ input[type="username"] {
   font-family: "Inter";
 }
 
-/* Specific styling for the password input */
 input[type="password"] {
   background-color: white;
   color: #000;
@@ -42,7 +40,6 @@ input[type="password"] {
   font-family: "Inter";
 }
 
-/* Focus state styling */
 input:focus {
   border-color: black;
   outline: none;
@@ -117,4 +114,29 @@ button:hover {
   bottom: 10px;
   right: 10px;
   background-image: url("/assets/img/Paw Print Icon.png");
+}
+
+/* Hide background images ONLY on small screens */
+@media (max-width: 768px) {
+  .corner-image {
+    display: none;
+  }
+
+  h1 {
+    font-size: 6vw;
+  }
+
+  p {
+    font-size: 3vw;
+    max-width: 90%;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 12px 40px;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
 }
