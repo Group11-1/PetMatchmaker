@@ -7,7 +7,7 @@
   height: 100vh;
   width: 100%;
   text-align: center;
-  position: relative; /* Ensures absolute elements inside are positioned correctly */
+  position: relative;
 }
 
 h1 {
@@ -61,17 +61,15 @@ button:hover {
   height: auto;
 }
 
-/* Corner Images */
 .corner-image {
   position: absolute;
   width: 120px;
   height: 120px;
   background-size: contain;
   background-repeat: no-repeat;
-  z-index: 1; /* Ensures they appear above the background */
+  z-index: 1;
 }
 
-/* Specific Positions */
 .top-left {
   top: 10px;
   left: 10px;
