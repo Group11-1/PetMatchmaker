@@ -15,6 +15,6 @@ export class WelcomeComponent {
   }
 
   onSignUpClick() {
-    this.router.navigate(['/sign-up']);
+    this.router.navigate(['/signup']);
   }
 }
