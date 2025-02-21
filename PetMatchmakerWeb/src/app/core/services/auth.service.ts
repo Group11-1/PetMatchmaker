@@ -7,15 +7,25 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:3000/api/login';
+  private isAdmin: boolean = false;
   private loggedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
 
   constructor(private http: HttpClient) {}
 
+  getIsAdmin(): boolean {
+    return this.isAdmin;
+  }
+
   // Send login request to the API
   login(username: string, password: string): Observable<any> {
     return this.http.post<any>(this.apiUrl, { username, password }).pipe(
-      // On login success, update the login state
-      tap(() => this.loggedInSubject.next(true))
+      tap((response) => {
+        if (response.token) {
+          this.saveToken(response.token); // Save the JWT token to localStorage
+          this.isAdmin = response.isAdmin; // Store the admin status
+        }
+        this.loggedInSubject.next(true); // Update login state
+      })
     );
   }
 

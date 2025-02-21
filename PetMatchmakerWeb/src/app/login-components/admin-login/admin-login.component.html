@@ -8,9 +8,25 @@
 
 <h1>Log In</h1>
 
-<input type="username" placeholder="Username" required />
-<input type="password" placeholder="Password" required />
+<form (ngSubmit)="onLogin()" #lognForm="ngForm">
+  <input
+    type="text"
+    id="username"
+    name="username"
+    [(ngModel)]="username"
+    placeholder="Username"
+    required
+  />
+  <input
+    type="password"
+    id="password"
+    name="password"
+    [(ngModel)]="password"
+    placeholder="Password"
+    required
+  />
 
-<div class="button">
-  <button>Login</button>
-</div>
+  <div class="button" type="submit">
+    <button>Login</button>
+  </div>
+</form>

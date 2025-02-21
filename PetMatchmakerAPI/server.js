@@ -90,12 +90,19 @@ app.post("/api/login", (req, res) => {
       if (!match)
         return res.status(400).json({ message: "Invalid credentials" });
 
-      // Create JWT token
-      const token = jwt.sign({ userId: user.id }, "your_jwt_secret", {
-        expiresIn: "1h",
-      });
+      // Check if the user is an admin (example role_id check)
+      const isAdmin = user.role_id === 1;
 
-      res.json({ token, role: user.role });
+      // Create JWT token
+      const token = jwt.sign(
+        { userId: user.id, role: user.role_id, isAdmin },
+        "your_jwt_secret",
+        {
+          expiresIn: "1h",
+        }
+      );
+
+      res.json({ token, isAdmin, role: user.role_id });
     }
   );
 });

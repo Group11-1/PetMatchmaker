@@ -33,12 +33,16 @@ export class LoginComponent {
         // Save role if needed
         localStorage.setItem('role', response.role);
 
-        // Get the return URL from the route parameters
-        const returnUrl =
-          this.route.snapshot.queryParams['returnUrl'] || '/questionnaire';
-
-        // Redirect to the return URL (or default to questionnaire)
-        this.router.navigate([returnUrl]);
+        // Check if the user is an admin using the getter method
+        if (this.authService.getIsAdmin()) {
+          // Redirecting to questionnaire for time being
+          this.router.navigate(['/questionnaire']);
+        } else {
+          // Redirect to the default user dashboard or questionnaire if not an admin
+          const returnUrl =
+            this.route.snapshot.queryParams['returnUrl'] || '/questionnaire';
+          this.router.navigate([returnUrl]);
+        }
       },
       (error) => {
         console.error('Login failed', error);
