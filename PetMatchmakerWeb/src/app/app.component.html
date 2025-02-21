@@ -1,8 +1,15 @@
-<app-header></app-header>
-<router-outlet></router-outlet>
-<div class="background-image-Paws"></div>
-<div class="container">
-  <div class="background-image-Cat"></div>
-  <div class="background-image-Dog"></div>
+<!-- Display the welcome screen if not logged in -->
+<router-outlet *ngIf="!isLoggedIn"></router-outlet>
+
+<!-- Only show these elements if the user is logged in -->
+<app-header *ngIf="isLoggedIn"></app-header>
+
+<!-- Display background images and container when logged in -->
+<div *ngIf="isLoggedIn" class="background-image-Paws"></div>
+
+<div *ngIf="isLoggedIn" class="container">
+  <div *ngIf="isLoggedIn" class="background-image-Cat"></div>
+  <div *ngIf="isLoggedIn" class="background-image-Dog"></div>
 </div>
-<app-footer></app-footer>
+
+<app-footer *ngIf="isLoggedIn"></app-footer>
