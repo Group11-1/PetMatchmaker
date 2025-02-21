@@ -18,9 +18,9 @@ export class AppComponent implements OnInit {
 
   constructor(private authService: AuthService) {}
 
-  ngOnInit() {
-    // Check if the user is logged in
-    this.isLoggedIn = this.authService.isLoggedIn();
-    console.log('isLoggedIn:', this.isLoggedIn);
+  ngOnInit(): void {
+    this.authService.getLoginStatus().subscribe((isLoggedIn) => {
+      this.isLoggedIn = isLoggedIn; // Update local login status
+    });
   }
 }

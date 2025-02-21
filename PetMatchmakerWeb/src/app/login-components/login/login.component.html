@@ -4,9 +4,23 @@
       ><fa-icon [icon]="faArrowLeft"></fa-icon> Back</a
     >
     <h2>Log In</h2>
-    <form>
-      <input type="username" placeholder="Username" required />
-      <input type="password" placeholder="Password" required />
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+      <input
+        type="text"
+        id="username"
+        name="username"
+        [(ngModel)]="username"
+        placeholder="Username"
+        required
+      />
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        placeholder="Password"
+        required
+      />
       <a href="#" class="forgot-password">Forgot Password</a>
       <button type="submit">Let's Get Started!</button>
     </form>

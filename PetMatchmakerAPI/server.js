@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const db = require("./db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -6,6 +7,7 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(cors());
 
 // Test database connection
 app.get("/api/test-db", (req, res) => {
@@ -48,29 +50,12 @@ app.post("/api/login", (req, res) => {
 });
 
 // Logout route
-app.post("/api/logout", authenticateToken, (req, res) => {
+app.post("/api/logout", (req, res) => {
   // Token-based authentication is stateless
   res.json({ message: "Logged out successfully" });
 });
 
-// Middleware to protect routes
-const authenticateToken = (req, res, next) => {
-  const token = req.headers["authorization"];
-
-  if (!token) return res.status(401).json({ message: "Access denied" });
-
-  jwt.verify(token, "your_jwt_secret", (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid token" });
-
-    req.user = user;
-    next();
-  });
-};
-
-// All routes below require authentication
-app.use(authenticateToken);
-
-// Example of protected route (Profile page or similar)
+// Profile page
 app.get("/api/profile", (req, res) => {
   const userId = req.user.userId;
   db.query("SELECT * FROM users WHERE id = ?", [userId], (err, result) => {
@@ -85,7 +70,20 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Pet Matchmaker Application!");
 });
 
-// Get all questions (Protected route)
+// Get all users
+app.get("/api/users", (req, res) => {
+  const query = "SELECT * FROM users";
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching users:", err);
+      return res.status(500).json({ message: "Server error" });
+    }
+    res.json(results);
+  });
+});
+
+// Get all questions
 app.get("/api/questions", (req, res) => {
   const query = "SELECT question FROM questions";
   db.query(query, (err, results) => {

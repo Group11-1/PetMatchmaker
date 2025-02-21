@@ -10,7 +10,14 @@
     <ul>
       <li><fa-icon [icon]="faHome" title="Home"></fa-icon></li>
       <li><fa-icon [icon]="faHeart" title="Favorites"></fa-icon></li>
-      <li><fa-icon [icon]="faUserCircle" title="Profile"></fa-icon></li>
+      <li>
+        <!-- Will be removing as more development is made. This is just for early development purposes! -->
+        <fa-icon
+          [icon]="faUserCircle"
+          title="Profile"
+          (click)="logout()"
+        ></fa-icon>
+      </li>
     </ul>
   </div>
 </header>
