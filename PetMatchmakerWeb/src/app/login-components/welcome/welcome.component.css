@@ -1,0 +1,120 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to right, #b6c4f5, #e2e7f8);
+  height: 100vh;
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+h1 {
+  font-family: "Luckiest Guy", Neucha;
+  font-size: 4vw;
+  margin-bottom: 10px;
+}
+
+p {
+  font-family: "Neucha";
+  font-size: 2vw;
+  max-width: 80%;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 15px 50px;
+  font-size: 18px;
+  font-family: "Luckiest Guy";
+  margin: 10px;
+  border: none;
+  background-color: #f8f3e2;
+  color: black;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+  background-color: #f8f3e2;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.logo-container {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.logo {
+  width: 300px;
+  max-width: 80%;
+  height: auto;
+}
+
+.corner-image {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.top-left {
+  top: 10px;
+  left: 10px;
+  background-image: url("/assets/img/Paw Print Icon.png");
+}
+
+.top-right {
+  top: 10px;
+  right: 10px;
+  background-image: url("/assets/img/Bone Icon.png");
+}
+
+.bottom-left {
+  bottom: 10px;
+  left: 10px;
+  background-image: url("/assets/img/Yarn Icon.png");
+}
+
+.bottom-right {
+  bottom: 10px;
+  right: 10px;
+  background-image: url("/assets/img/Paw Print Icon.png");
+}
+
+/* Hide background images ONLY on small screens */
+@media (max-width: 768px) {
+  .corner-image {
+    display: none;
+  }
+
+  h1 {
+    font-size: 6vw;
+  }
+
+  p {
+    font-size: 3vw;
+    max-width: 90%;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 12px 40px;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+}

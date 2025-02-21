@@ -1,0 +1,32 @@
+<div class="corner-image top-left"></div>
+<div class="corner-image top-right"></div>
+<div class="corner-image bottom-left"></div>
+<div class="corner-image bottom-right"></div>
+<div class="logo-container">
+  <img src="assets/img/Welcome Page Icon.png" alt="Website Logo" class="logo" />
+</div>
+
+<h1>Log In</h1>
+
+<form (ngSubmit)="onLogin()" #lognForm="ngForm">
+  <input
+    type="text"
+    id="username"
+    name="username"
+    [(ngModel)]="username"
+    placeholder="Username"
+    required
+  />
+  <input
+    type="password"
+    id="password"
+    name="password"
+    [(ngModel)]="password"
+    placeholder="Password"
+    required
+  />
+
+  <div class="button" type="submit">
+    <button>Login</button>
+  </div>
+</form>
