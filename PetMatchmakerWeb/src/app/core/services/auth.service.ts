@@ -29,6 +29,14 @@ export class AuthService {
     );
   }
 
+  // Admin login
+  loginAdmin(username: string, password: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/admin`, {
+      username,
+      password,
+    });
+  }
+
   // Check if the user is logged in
   isLoggedIn(): boolean {
     const token = localStorage.getItem('jwt_token');
@@ -50,6 +58,11 @@ export class AuthService {
   // Sign Up & Auto Login
   signup(userData: any): Observable<any> {
     return this.http.post<any>('http://localhost:3000/api/signup', userData);
+  }
+
+  //Clears token only
+  clearToken() {
+    localStorage.removeItem('token');
   }
 
   // Clear token on logout
