@@ -14,6 +14,8 @@ export class AdminLoginComponent {
   username: string = '';
   password: string = '';
 
+  isLoggedIn: boolean = false;
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -21,27 +23,23 @@ export class AdminLoginComponent {
   ) {}
 
   onLogin() {
-    this.authService.login(this.username, this.password).subscribe(
+    this.authService.loginAdmin(this.username, this.password).subscribe(
       (response: any) => {
-        // Save the token using AuthService
-        this.authService.saveToken(response.token);
+        if (response.role_id === 1) {
+          // Save the token
+          this.authService.saveToken(response.token);
 
-        // Save role if needed
-        localStorage.setItem('role', response.role);
+          // Store role
+          localStorage.setItem('role', response.role_id.toString());
 
-        // Check if the user is an admin using the getter method
-        if (this.authService.getIsAdmin()) {
-          // Redirecting to questionnaire for time being
+          // Redirect to the admin dashboard
           this.router.navigate(['/questionnaire']);
         } else {
-          // Redirect to the default user dashboard or questionnaire if not an admin
-          const returnUrl =
-            this.route.snapshot.queryParams['returnUrl'] || '/questionnaire';
-          this.router.navigate([returnUrl]);
+          alert('Access denied! You must be an admin to log in.');
         }
       },
       (error) => {
-        console.error('Login failed', error);
+        console.error('Admin login failed', error);
         alert('Invalid credentials!');
       }
     );

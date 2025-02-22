@@ -107,6 +107,42 @@ app.post("/api/login", (req, res) => {
   );
 });
 
+// Admin Login route
+app.post("/api/login/admin", (req, res) => {
+  const { username, password } = req.body;
+
+  // Query the database to find the admin user
+  db.query(
+    "SELECT * FROM users WHERE username = ? AND role_id = 1",
+    [username],
+    (err, results) => {
+      if (err) return res.status(500).json({ message: "Database error" });
+
+      if (results.length === 0)
+        return res
+          .status(401)
+          .json({ message: "Invalid credentials or not an admin" });
+
+      const user = results[0];
+
+      bcrypt.compare(password, user.password, (err, isMatch) => {
+        if (err) return res.status(500).json({ message: "Login Error" });
+
+        if (!isMatch)
+          return res.status(401).json({ message: "Invalid credentials" });
+
+        const token = jwt.sign(
+          { username: user.username, role_id: user.role_id },
+          "your_jwt_secret",
+          { expiresIn: "1h" }
+        );
+
+        res.json({ token, role_id: user.role_id });
+      });
+    }
+  );
+});
+
 // Logout route
 app.post("/api/logout", (req, res) => {
   // Token-based authentication is stateless
