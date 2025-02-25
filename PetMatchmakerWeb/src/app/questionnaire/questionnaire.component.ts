@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-questionnaire',
@@ -7,4 +7,8 @@ import { Component } from '@angular/core';
   templateUrl: './questionnaire.component.html',
   styleUrl: './questionnaire.component.css',
 })
-export class QuestionnaireComponent {}
+export class QuestionnaireComponent implements OnInit {
+  ngOnInit(): void {
+    console.log('QuestionnaireComponent initialized');
+  }
+}

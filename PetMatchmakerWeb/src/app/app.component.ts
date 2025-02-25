@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { HeaderComponent } from './core/shared/header/header.component';
 import { FooterComponent } from './core/shared/footer/footer.component';
@@ -16,7 +16,13 @@ export class AppComponent implements OnInit {
 
   isLoggedIn: boolean = false;
 
-  constructor(private authService: AuthService) {}
+  hideLayout = false;
+
+  constructor(private authService: AuthService, private router: Router) {
+    this.router.events.subscribe(() => {
+      this.hideLayout = this.router.url.includes('/questionnaire');
+    });
+  }
 
   ngOnInit(): void {
     this.authService.getLoginStatus().subscribe((isLoggedIn) => {
