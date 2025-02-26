@@ -1,2 +1,46 @@
-<h1>Questionnaire Component Loaded</h1>
-<p>If you see this, the component is being loaded!</p>
+<button (click)="logout()">Exit Questionnaire</button>
+
+<div *ngIf="!loading && questions.length > 0; else loadingTemplate">
+  <h2>{{ questions[currentQuestionIndex].question }}</h2>
+
+  <div
+    *ngIf="questions[currentQuestionIndex].choices.length > 0; else noOptions"
+  >
+    <div *ngFor="let choice of questions[currentQuestionIndex].choices">
+      <button (click)="answerQuestion(choice.choice, choice.nextQuestionId)">
+        {{ choice.choice }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #noOptions>
+  <p>No options available for this question.</p>
+</ng-template>
+
+<ng-template #loadingTemplate>
+  <p>Loading questions...</p>
+</ng-template>
+
+<!-- <div *ngIf="questions.length > 0; else loading">
+  <h2>{{ questions[currentQuestionIndex].text }}</h2>
+
+  <div *ngFor="let option of questions[currentQuestionIndex]?.options">
+    <button (click)="answerQuestion(option.value, option.nextQuestionId)">
+      {{ option.value }}
+    </button>
+  </div>
+</div>
+
+<ng-template #loading>
+  <p>Loading questions...</p>
+</ng-template> -->
+
+<!-- <div *ngFor="let question of questions">
+  <div>{{ question.text }}</div>
+  <div *ngFor="let option of question.options">
+    <button (click)="selectOption(option)">
+      {{ option.value }}
+    </button>
+  </div>
+</div> -->

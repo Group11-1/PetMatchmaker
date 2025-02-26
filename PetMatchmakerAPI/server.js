@@ -3,6 +3,7 @@ const cors = require("cors");
 const db = require("./db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { format } = require("mysql2");
 const app = express();
 const port = 3000;
 
@@ -179,13 +180,41 @@ app.get("/api/users", (req, res) => {
 
 // Get all questions
 app.get("/api/questions", (req, res) => {
-  const query = "SELECT question FROM questions";
+  const query = `
+    SELECT q.id AS question_id, q.question, q.format, q.answer_type, 
+           c.id AS choice_id, c.choice, c.next_question_id
+    FROM questions q
+    LEFT JOIN choices c ON q.id = c.question_id
+    ORDER BY q.id, c.id`;
+
   db.query(query, (err, results) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Server error");
     }
-    res.json(results);
+
+    // Organize the data into a structured JSON format
+    const questionsMap = new Map();
+
+    results.forEach((row) => {
+      if (!questionsMap.has(row.question_id)) {
+        questionsMap.set(row.question_id, {
+          id: row.question_id,
+          question: row.question,
+          format: row.format,
+          choices: [],
+        });
+      }
+      if (row.choice) {
+        questionsMap.get(row.question_id).choices.push({
+          id: row.choice_id,
+          choice: row.choice,
+          next_question_id: row.next_question_id,
+        });
+      }
+    });
+
+    res.json(Array.from(questionsMap.values()));
   });
 });
 
