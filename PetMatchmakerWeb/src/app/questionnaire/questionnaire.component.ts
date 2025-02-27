@@ -69,35 +69,33 @@ export class QuestionnaireComponent implements OnInit {
     }
   }
 
-  // Function to handle checkbox selection changes
-  onCheckboxChange(choice: string, event: any): void {
+  onCheckboxChange(choice: Choice, event: any): void {
     if (event.target.checked) {
-      // If the checkbox is checked, add it to the array
-      if (!this.selectedChoices.includes(choice)) {
-        this.selectedChoices.push(choice);
+      if (!this.selectedChoices.includes(choice.choice)) {
+        this.selectedChoices.push(choice.choice);
       }
     } else {
-      // If the checkbox is unchecked, remove it from the array
-      const index = this.selectedChoices.indexOf(choice);
+      const index = this.selectedChoices.indexOf(choice.choice);
       if (index > -1) {
         this.selectedChoices.splice(index, 1);
       }
     }
   }
 
-  // Function to proceed to the next question
-  proceedToNextQuestion(): void {
-    console.log(`Current Question Index: ${this.currentQuestionIndex}`);
-
-    if (this.currentQuestionIndex < this.questions.length - 1) {
-      this.currentQuestionIndex++;
-      console.log(
-        `Moved to Next Question ID: ${
-          this.questions[this.currentQuestionIndex].id
-        }`
+  handleCheckboxNext(): void {
+    if (this.selectedChoices.length > 0) {
+      const selectedChoiceObjects = this.questions[
+        this.currentQuestionIndex
+      ].choices.filter((choice) =>
+        this.selectedChoices.includes(choice.choice)
       );
-    } else {
-      console.log('End of questionnaire reached.');
+
+      // Determine the next question logic (use last selected choice's next_question_id)
+      const nextQuestionId =
+        selectedChoiceObjects[selectedChoiceObjects.length - 1]
+          ?.next_question_id;
+
+      this.answerQuestion(this.selectedChoices, nextQuestionId);
     }
   }
 
@@ -126,8 +124,5 @@ export class QuestionnaireComponent implements OnInit {
         return;
       }
     }
-
-    console.log(`Proceeding sequentially to next question.`);
-    this.proceedToNextQuestion();
   }
 }

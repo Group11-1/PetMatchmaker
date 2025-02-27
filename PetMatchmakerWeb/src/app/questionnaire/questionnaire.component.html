@@ -45,7 +45,7 @@
         <input
           type="checkbox"
           [value]="choice.choice"
-          (change)="onCheckboxChange(choice.choice, $event)"
+          (change)="onCheckboxChange(choice, $event)"
         />
         {{ choice.choice }}
       </div>
@@ -82,7 +82,7 @@
       "
     >
       <button
-        (click)="proceedToNextQuestion()"
+        (click)="handleCheckboxNext()"
         [disabled]="selectedChoices.length === 0"
       >
         Next
