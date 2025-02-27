@@ -13,6 +13,7 @@
         {{ choice.next_question_id }}
       </p>
     </div>
+
     <!-- Multiple-Choice Format -->
     <div *ngIf="questions[currentQuestionIndex].format === 'multiple_choice'">
       <div *ngFor="let choice of questions[currentQuestionIndex].choices">
@@ -20,7 +21,7 @@
           type="radio"
           name="question{{ questions[currentQuestionIndex].id }}"
           [value]="choice.choice"
-          (click)="answerQuestion(choice.choice, choice.next_question_id)"
+          [(ngModel)]="selectedRadioChoice"
         />
         {{ choice.choice }}
       </div>
@@ -28,7 +29,10 @@
 
     <!-- Dropdown Format -->
     <div *ngIf="questions[currentQuestionIndex].format === 'dropdown'">
-      <select (change)="onDropdownChange($event)">
+      <select
+        (change)="onDropdownChange($event)"
+        [(ngModel)]="selectedDropdownChoice"
+      >
         <option value="" disabled selected>Select an option</option>
         <option
           *ngFor="let choice of questions[currentQuestionIndex].choices"
@@ -39,7 +43,7 @@
       </select>
     </div>
 
-    <!-- Checkbox format -->
+    <!-- Checkbox Format -->
     <div *ngIf="questions[currentQuestionIndex].format === 'checkbox'">
       <div *ngFor="let choice of questions[currentQuestionIndex].choices">
         <input
@@ -74,19 +78,15 @@
       </div>
     </div>
 
-    <!-- Show Next Button only when at least one checkbox is selected -->
+    <!-- Show Next Button for any format -->
     <div
       *ngIf="
-        selectedChoices.length > 0 &&
-        questions[currentQuestionIndex].format === 'checkbox'
+        selectedRadioChoice ||
+        selectedDropdownChoice ||
+        selectedChoices.length > 0
       "
     >
-      <button
-        (click)="handleCheckboxNext()"
-        [disabled]="selectedChoices.length === 0"
-      >
-        Next
-      </button>
+      <button (click)="handleNext()">Next</button>
     </div>
 
     <!-- Show Submit Button only for last free response question -->

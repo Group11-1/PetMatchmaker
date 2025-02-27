@@ -22,6 +22,9 @@ export class QuestionnaireComponent implements OnInit {
 
   selectedChoices: string[] = [];
 
+  selectedRadioChoice: string = '';
+  selectedDropdownChoice: string = '';
+
   constructor(
     private authService: AuthService,
     private http: HttpClient,
@@ -56,17 +59,7 @@ export class QuestionnaireComponent implements OnInit {
   }
 
   onDropdownChange(event: any): void {
-    const selectedChoice = event.target.value;
-    const selectedChoiceObject = this.questions[
-      this.currentQuestionIndex
-    ].choices.find((choice) => choice.choice === selectedChoice);
-
-    if (selectedChoiceObject) {
-      this.answerQuestion(
-        selectedChoice,
-        selectedChoiceObject.next_question_id
-      );
-    }
+    this.selectedDropdownChoice = event.target.value;
   }
 
   onCheckboxChange(choice: Choice, event: any): void {
@@ -96,6 +89,44 @@ export class QuestionnaireComponent implements OnInit {
           ?.next_question_id;
 
       this.answerQuestion(this.selectedChoices, nextQuestionId);
+    }
+  }
+
+  handleNext(): void {
+    let selectedChoice;
+
+    // Handle radio button selection (multiple choice)
+    if (this.selectedRadioChoice) {
+      selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
+        (choice) => choice.choice === this.selectedRadioChoice
+      );
+    }
+
+    // Handle dropdown selection
+    if (this.selectedDropdownChoice) {
+      selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
+        (choice) => choice.choice === this.selectedDropdownChoice
+      );
+    }
+
+    // Handle checkbox selection
+    if (this.selectedChoices.length > 0) {
+      // Find the selected choice objects based on the checkbox selections
+      const selectedChoiceObjects = this.questions[
+        this.currentQuestionIndex
+      ].choices.filter((choice) =>
+        this.selectedChoices.includes(choice.choice)
+      );
+      // Use the last selected choice's next_question_id
+      selectedChoice = selectedChoiceObjects[selectedChoiceObjects.length - 1];
+    }
+
+    // If a valid selected choice exists, answer the question and move to the next one
+    if (selectedChoice) {
+      this.answerQuestion(
+        selectedChoice.choice,
+        selectedChoice.next_question_id
+      );
     }
   }
 
