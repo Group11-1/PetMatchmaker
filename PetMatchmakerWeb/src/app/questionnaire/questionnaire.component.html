@@ -71,7 +71,9 @@
     >
       <div *ngFor="let choice of questions[currentQuestionIndex].choices">
         <button
-          (click)="answerQuestion(choice.choice, choice.next_question_id)"
+          (click)="
+            answerQuestion(choice.choice, choice.next_question_id ?? null)
+          "
         >
           {{ choice.choice }}
         </button>

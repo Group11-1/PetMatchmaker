@@ -59,7 +59,17 @@ export class QuestionnaireComponent implements OnInit {
   }
 
   onDropdownChange(event: any): void {
-    this.selectedDropdownChoice = event.target.value;
+    this.selectedDropdownChoice = event.target.value; // Store selected choice
+
+    const selectedChoiceObject = this.questions[
+      this.currentQuestionIndex
+    ].choices.find((choice) => choice.choice === this.selectedDropdownChoice);
+
+    if (selectedChoiceObject) {
+      console.log('Dropdown selected:', selectedChoiceObject);
+    } else {
+      console.error('Selected choice not found in choices array!');
+    }
   }
 
   onCheckboxChange(choice: Choice, event: any): void {
@@ -75,85 +85,75 @@ export class QuestionnaireComponent implements OnInit {
     }
   }
 
-  handleCheckboxNext(): void {
-    if (this.selectedChoices.length > 0) {
-      const selectedChoiceObjects = this.questions[
-        this.currentQuestionIndex
-      ].choices.filter((choice) =>
-        this.selectedChoices.includes(choice.choice)
-      );
-
-      // Determine the next question logic (use last selected choice's next_question_id)
-      const nextQuestionId =
-        selectedChoiceObjects[selectedChoiceObjects.length - 1]
-          ?.next_question_id;
-
-      this.answerQuestion(this.selectedChoices, nextQuestionId);
-    }
-  }
-
   handleNext(): void {
-    let selectedChoice;
+    let selectedChoice: Choice | undefined;
 
-    // Handle radio button selection (multiple choice)
     if (this.selectedRadioChoice) {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedRadioChoice
       );
     }
 
-    // Handle dropdown selection
     if (this.selectedDropdownChoice) {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedDropdownChoice
       );
     }
 
-    // Handle checkbox selection
     if (this.selectedChoices.length > 0) {
-      // Find the selected choice objects based on the checkbox selections
       const selectedChoiceObjects = this.questions[
         this.currentQuestionIndex
       ].choices.filter((choice) =>
         this.selectedChoices.includes(choice.choice)
       );
-      // Use the last selected choice's next_question_id
-      selectedChoice = selectedChoiceObjects[selectedChoiceObjects.length - 1];
+      selectedChoice =
+        selectedChoiceObjects[selectedChoiceObjects.length - 1] ||
+        selectedChoice;
     }
 
-    // If a valid selected choice exists, answer the question and move to the next one
     if (selectedChoice) {
-      this.answerQuestion(
-        selectedChoice.choice,
-        selectedChoice.next_question_id
-      );
+      const nextQuestionId = selectedChoice.next_question_id ?? null; // Handle undefined case
+
+      if (nextQuestionId !== null) {
+        console.log('Proceeding to next question:', selectedChoice);
+        this.answerQuestion(selectedChoice.choice, nextQuestionId);
+      } else {
+        console.error('No next question ID provided, cannot proceed!');
+      }
+    } else {
+      console.error('No valid selection found, unable to proceed!');
     }
   }
 
-  answerQuestion(answer: any, nextQuestionId?: number): void {
-    const currentQuestion = this.questions[this.currentQuestionIndex];
-    console.log(
-      `Answering Question ID: ${currentQuestion.id}, Answer: ${answer}`
-    );
-    console.log(`Next Question ID (if exists):`, nextQuestionId);
-
-    this.responses[currentQuestion.id] = answer;
-
-    if (nextQuestionId) {
-      const nextIndex = this.questions.findIndex(
-        (q) => q.id === nextQuestionId
-      );
-      console.log(`Next Question Index Found: ${nextIndex}`);
-
-      if (nextIndex !== -1) {
-        this.currentQuestionIndex = nextIndex;
-        console.log(
-          `Navigating to Question ID: ${
-            this.questions[this.currentQuestionIndex].id
-          }`
-        );
-        return;
-      }
+  answerQuestion(
+    answer: string | string[],
+    nextQuestionId: number | null
+  ): void {
+    if (nextQuestionId === null) {
+      console.error('Next question ID is null. Stopping progression.');
+      return;
     }
+
+    console.log(
+      'Answer submitted:',
+      answer,
+      'Next question ID:',
+      nextQuestionId
+    );
+
+    const nextQuestionIndex = this.questions.findIndex(
+      (q) => q.id === nextQuestionId
+    );
+
+    if (nextQuestionIndex === -1) {
+      console.error(
+        'Next question not found in the questions array:',
+        nextQuestionId
+      );
+      return;
+    }
+
+    console.log('Moving to next question at index:', nextQuestionIndex);
+    this.currentQuestionIndex = nextQuestionIndex;
   }
 }
