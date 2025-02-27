@@ -2,8 +2,11 @@ export interface Question {
   id: number;
   question: string;
   format: string;
-  choices: {
-    choice: string;
-    nextQuestionId: number;
-  }[];
+  choices: Choice[];
+}
+
+export interface Choice {
+  id: number;
+  choice: string;
+  next_question_id?: number;
 }
