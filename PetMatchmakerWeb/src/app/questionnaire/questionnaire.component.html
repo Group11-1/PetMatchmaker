@@ -83,21 +83,17 @@
     <!-- Show Next Button for any format -->
     <div
       *ngIf="
-        selectedRadioChoice ||
-        selectedDropdownChoice ||
-        selectedChoices.length > 0
+        currentQuestionIndex < questions.length - 1 &&
+        (selectedRadioChoice ||
+          selectedDropdownChoice ||
+          selectedChoices.length > 0)
       "
     >
       <button (click)="handleNext()">Next</button>
     </div>
 
     <!-- Show Submit Button only for last free response question -->
-    <div
-      *ngIf="
-        selectedChoices.length > 0 &&
-        questions[currentQuestionIndex].format === 'free_response'
-      "
-    >
+    <div *ngIf="currentQuestionIndex === questions.length - 1">
       <button [disabled]="selectedChoices.length === 0">Submit</button>
     </div>
   </div>

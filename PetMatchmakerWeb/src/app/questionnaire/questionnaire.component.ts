@@ -86,29 +86,34 @@ export class QuestionnaireComponent implements OnInit {
   }
 
   handleNext(): void {
-    let selectedChoice: Choice | undefined;
+    let selectedChoice: Choice | undefined = undefined;
 
+    // Check radio button selection
     if (this.selectedRadioChoice) {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedRadioChoice
       );
     }
 
-    if (this.selectedDropdownChoice) {
+    // Check dropdown selection (only if radio hasn't already assigned selectedChoice)
+    if (!selectedChoice && this.selectedDropdownChoice) {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedDropdownChoice
       );
     }
 
-    if (this.selectedChoices.length > 0) {
+    // Check checkbox selections (multiple choices)
+    if (!selectedChoice && this.selectedChoices.length > 0) {
       const selectedChoiceObjects = this.questions[
         this.currentQuestionIndex
       ].choices.filter((choice) =>
         this.selectedChoices.includes(choice.choice)
       );
-      selectedChoice =
-        selectedChoiceObjects[selectedChoiceObjects.length - 1] ||
-        selectedChoice;
+
+      if (selectedChoiceObjects.length > 0) {
+        selectedChoice =
+          selectedChoiceObjects[selectedChoiceObjects.length - 1]; // Pick the last selected checkbox
+      }
     }
 
     if (selectedChoice) {
