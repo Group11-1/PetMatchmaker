@@ -13,23 +13,23 @@
 }
 
 .place-space {
-  background-color: #fff0f6; /* Light Pink */
+  background-color: #f8f3e2; /* Light Pink */
 }
 
 .lifestyle {
-  background-color: #fef9c3; /* Soft Yellow */
+  background-color: #f3e2f8; /* Soft Yellow */
 }
 
 .commitment {
-  background-color: #f0fff0; /* Light Green */
+  background-color: #e2f8e8; /* Light Green */
 }
 
 .additional-info {
-  background-color: #f5e1da; /* Warm Beige */
+  background-color: #f8f3e2; /* Warm Beige */
 }
 
 .default-bg {
-  background-color: #f5f5f5; /* Light Gray */
+  background-color: #f8f3e2;
 }
 
 /* Ensure that the div containing all content fills the screen */
@@ -43,6 +43,7 @@
 h1 {
   padding: 20px 20px;
   font-family: "Luckiest Guy", sans-serif;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 h2 {
@@ -248,11 +249,21 @@ h2 {
 .navigation-buttons button {
   padding: 10px 20px;
   border: none;
+  font-family: "Luckiest Guy", sans-serif; /* Apply Luckiest Guy font */
   background-color: black;
   color: white;
   font-size: 16px;
   cursor: pointer;
   border-radius: 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow */
+  cursor: pointer; /* Change cursor to indicate it's clickable */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+
+.navigation-buttons button:hover {
+  background-color: #333; /* Darker background color on hover */
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* Enhance shadow on hover */
 }
 
 .navigation-buttons button:disabled {
