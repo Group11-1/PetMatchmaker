@@ -1,4 +1,5 @@
 <div [ngClass]="getSectionHeader().bgColor">
+  <!-- Exit Logo Section -->
   <div class="exit-logo">
     <button (click)="logout()">Exit Questionnaire</button>
     <img
@@ -8,6 +9,7 @@
     />
   </div>
 
+  <!-- Main Questionnaire Content -->
   <div *ngIf="!loading && questions.length > 0; else loadingTemplate">
     <h1>
       {{ getSectionHeader().title }}
@@ -16,7 +18,7 @@
     <div class="question-container">
       <h2>{{ questions[currentQuestionIndex].question }}</h2>
 
-      <!-- Check if there are choices -->
+      <!-- Question Formats (Multiple-Choice, Dropdown, Checkbox, Free Response) -->
       <div
         *ngIf="
           questions[currentQuestionIndex].choices.length > 0;
@@ -110,32 +112,56 @@
             </button>
           </div>
         </div>
-
-        <!-- Show Next Button for any format -->
-        <div
-          *ngIf="
-            currentQuestionIndex < questions.length - 1 &&
-            (selectedRadioChoice ||
-              selectedDropdownChoice ||
-              selectedChoices.length > 0)
-          "
-        >
-          <button (click)="handleNext()">Next</button>
-        </div>
-
-        <!-- Show Submit Button only for last free response question -->
-        <div *ngIf="currentQuestionIndex === questions.length - 1">
-          <button [disabled]="selectedChoices.length === 0">Submit</button>
-        </div>
       </div>
     </div>
   </div>
 
+  <!-- No Options Fallback -->
   <ng-template #noOptions>
     <p>No options available for this question.</p>
   </ng-template>
 
+  <!-- Loading Template -->
   <ng-template #loadingTemplate>
     <p>Loading questions...</p>
   </ng-template>
+
+  <!-- Questionnaire Navigation Section (Progress, Question Number, Back/Next Buttons) -->
+  <div class="questionnaire-navigation">
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar" [style.width.%]="getProgressPercentage()"></div>
+    </div>
+
+    <!-- Question Counter -->
+    <p class="completion-percentage">
+      {{ getProgressPercentage() }}% Completed
+    </p>
+
+    <!-- Navigation Buttons (Back and Next) -->
+    <div class="navigation-buttons">
+      <!-- Back Button -->
+      <button (click)="handleBack()" [disabled]="currentQuestionIndex === 0">
+        Back
+      </button>
+
+      <!-- Next Button (Moved from the original position) -->
+      <button
+        *ngIf="
+          currentQuestionIndex < questions.length - 1 &&
+          (selectedRadioChoice ||
+            selectedDropdownChoice ||
+            selectedChoices.length > 0)
+        "
+        (click)="handleNext()"
+      >
+        Next
+      </button>
+
+      <!-- Submit Button only for last free response question -->
+      <div *ngIf="currentQuestionIndex === questions.length - 1">
+        <button [disabled]="selectedChoices.length === 0">Submit</button>
+      </div>
+    </div>
+  </div>
 </div>

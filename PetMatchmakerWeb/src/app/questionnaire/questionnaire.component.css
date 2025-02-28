@@ -190,7 +190,7 @@ h2 {
 
 .custom-textarea {
   width: 600px; /* Makes it responsive */
-  min-height: 300px; /* Bigger area for long responses */
+  min-height: 200px; /* Bigger area for long responses */
   font-family: "Neucha", cursive; /* Sets font to Neucha */
   font-size: 18px;
   padding: 10px;
@@ -204,4 +204,58 @@ h2 {
   font-family: "Neucha", cursive;
   font-size: 18px;
   color: rgba(0, 0, 0, 0.6); /* Slightly faded placeholder */
+}
+
+/* Navigation container */
+.questionnaire-navigation {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  text-align: center;
+}
+
+/* Progress bar */
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background-color: #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: black;
+  transition: width 0.3s ease-in-out;
+}
+
+/* Question Completion */
+.completion-percentage {
+  font-size: 18px;
+  margin-bottom: 8px;
+  font-family: "Neucha", sans-serif;
+}
+
+/* Buttons */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navigation-buttons button {
+  padding: 10px 20px;
+  border: none;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 25px;
+}
+
+.navigation-buttons button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }

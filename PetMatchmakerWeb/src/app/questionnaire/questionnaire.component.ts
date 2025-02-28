@@ -6,12 +6,10 @@ import { AuthService } from '../core/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Question } from '../core/models/questionnaire.model';
 import { Choice } from '../core/models/questionnaire.model';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPaw } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-questionnaire',
-  imports: [CommonModule, FormsModule, FontAwesomeModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './questionnaire.component.html',
   styleUrl: './questionnaire.component.css',
 })
@@ -26,8 +24,6 @@ export class QuestionnaireComponent implements OnInit {
 
   selectedRadioChoice: string = '';
   selectedDropdownChoice: string = '';
-
-  faPaw = faPaw;
 
   constructor(
     private authService: AuthService,
@@ -204,5 +200,17 @@ export class QuestionnaireComponent implements OnInit {
       default:
         return { title: 'Questionnaire', icon: '❓', bgColor: 'default-bg' };
     }
+  }
+
+  handleBack() {
+    if (this.currentQuestionIndex > 0) {
+      this.currentQuestionIndex--;
+    }
+  }
+
+  getProgressPercentage(): number {
+    const percentage =
+      (this.currentQuestionIndex / this.questions.length) * 100;
+    return Math.round(percentage);
   }
 }
