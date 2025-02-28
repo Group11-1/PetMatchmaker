@@ -1,5 +1,6 @@
 export interface Question {
   id: number;
+  section_id: number;
   question: string;
   format: string;
   choices: Choice[];

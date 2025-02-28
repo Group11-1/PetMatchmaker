@@ -181,7 +181,7 @@ app.get("/api/users", (req, res) => {
 // Get all questions
 app.get("/api/questions", (req, res) => {
   const query = `
-    SELECT q.id AS question_id, q.question, q.format, q.answer_type, 
+    SELECT q.id AS question_id, q.section_id, q.question, q.format, q.answer_type, 
            c.id AS choice_id, c.choice, c.next_question_id
     FROM questions q
     LEFT JOIN choices c ON q.id = c.question_id
@@ -200,6 +200,7 @@ app.get("/api/questions", (req, res) => {
       if (!questionsMap.has(row.question_id)) {
         questionsMap.set(row.question_id, {
           id: row.question_id,
+          section_id: row.section_id,
           question: row.question,
           format: row.format,
           choices: [],

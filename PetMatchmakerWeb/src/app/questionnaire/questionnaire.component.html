@@ -1,108 +1,141 @@
-<button (click)="logout()">Exit Questionnaire</button>
+<div [ngClass]="getSectionHeader().bgColor">
+  <div class="exit-logo">
+    <button (click)="logout()">Exit Questionnaire</button>
+    <img
+      class="logo"
+      src="assets/img/Website Icon.png"
+      alt="PetMatchmaker Logo"
+    />
+  </div>
 
-<div *ngIf="!loading && questions.length > 0; else loadingTemplate">
-  <h2>{{ questions[currentQuestionIndex].question }}</h2>
+  <div *ngIf="!loading && questions.length > 0; else loadingTemplate">
+    <h1>
+      {{ getSectionHeader().title }}
+      <span>{{ getSectionHeader().icon }}</span>
+    </h1>
+    <div class="question-container">
+      <h2>{{ questions[currentQuestionIndex].question }}</h2>
 
-  <!-- Check if there are choices -->
-  <div
-    *ngIf="questions[currentQuestionIndex].choices.length > 0; else noOptions"
-  >
-    <div *ngFor="let choice of questions[currentQuestionIndex].choices">
-      <p>
-        Choice: {{ choice.choice }}, Next Question ID:
-        {{ choice.next_question_id }}
-      </p>
-    </div>
-
-    <!-- Multiple-Choice Format -->
-    <div *ngIf="questions[currentQuestionIndex].format === 'multiple_choice'">
-      <div *ngFor="let choice of questions[currentQuestionIndex].choices">
-        <input
-          type="radio"
-          name="question{{ questions[currentQuestionIndex].id }}"
-          [value]="choice.choice"
-          [(ngModel)]="selectedRadioChoice"
-        />
-        {{ choice.choice }}
-      </div>
-    </div>
-
-    <!-- Dropdown Format -->
-    <div *ngIf="questions[currentQuestionIndex].format === 'dropdown'">
-      <select
-        (change)="onDropdownChange($event)"
-        [(ngModel)]="selectedDropdownChoice"
+      <!-- Check if there are choices -->
+      <div
+        *ngIf="
+          questions[currentQuestionIndex].choices.length > 0;
+          else noOptions
+        "
       >
-        <option value="" disabled selected>Select an option</option>
-        <option
-          *ngFor="let choice of questions[currentQuestionIndex].choices"
-          [value]="choice.choice"
+        <!-- Multiple-Choice Format -->
+        <div
+          *ngIf="questions[currentQuestionIndex].format === 'multiple_choice'"
         >
-          {{ choice.choice }}
-        </option>
-      </select>
-    </div>
+          <div
+            *ngFor="let choice of questions[currentQuestionIndex].choices"
+            class="radio-container"
+          >
+            <input
+              type="radio"
+              name="question{{ questions[currentQuestionIndex].id }}"
+              [value]="choice.choice"
+              [(ngModel)]="selectedRadioChoice"
+              class="custom-radio"
+            />
+            <label class="radio-label">{{ choice.choice }}</label>
+          </div>
+        </div>
 
-    <!-- Checkbox Format -->
-    <div *ngIf="questions[currentQuestionIndex].format === 'checkbox'">
-      <div *ngFor="let choice of questions[currentQuestionIndex].choices">
-        <input
-          type="checkbox"
-          [value]="choice.choice"
-          (change)="onCheckboxChange(choice, $event)"
-        />
-        {{ choice.choice }}
-      </div>
-    </div>
+        <!-- Dropdown Format -->
+        <div *ngIf="questions[currentQuestionIndex].format === 'dropdown'">
+          <select
+            class="custom-dropdown"
+            (change)="onDropdownChange($event)"
+            [(ngModel)]="selectedDropdownChoice"
+          >
+            <option value="" disabled [selected]="!selectedDropdownChoice">
+              Select an option
+            </option>
+            <option
+              *ngFor="let choice of questions[currentQuestionIndex].choices"
+              [value]="choice.choice"
+            >
+              {{ choice.choice }}
+            </option>
+          </select>
+        </div>
 
-    <!-- Free Response Format -->
-    <div *ngIf="questions[currentQuestionIndex].format === 'free_response'">
-      <input type="text" placeholder="Type your answer here..." />
-    </div>
+        <!-- Checkbox Format -->
+        <div *ngIf="questions[currentQuestionIndex].format === 'checkbox'">
+          <div
+            *ngFor="let choice of questions[currentQuestionIndex].choices"
+            class="checkbox-container"
+          >
+            <input
+              type="checkbox"
+              class="custom-checkbox"
+              [value]="choice.choice"
+              (change)="onCheckboxChange(choice, $event)"
+              id="checkbox-{{ choice.choice }}"
+            />
+            <label class="checkbox-label" for="checkbox-{{ choice.choice }}">
+              {{ choice.choice }}
+            </label>
+          </div>
+        </div>
 
-    <!-- Fallback for other question formats (e.g., dropdown, checkbox) -->
-    <div
-      *ngIf="
-        questions[currentQuestionIndex].format !== 'multiple_choice' &&
-        questions[currentQuestionIndex].format !== 'dropdown' &&
-        questions[currentQuestionIndex].format !== 'checkbox' &&
-        questions[currentQuestionIndex].format !== 'free_response'
-      "
-    >
-      <div *ngFor="let choice of questions[currentQuestionIndex].choices">
-        <button
-          (click)="
-            answerQuestion(choice.choice, choice.next_question_id ?? null)
+        <!-- Free Response Format -->
+        <div
+          class="response-format"
+          *ngIf="questions[currentQuestionIndex].format === 'free_response'"
+        >
+          <textarea
+            class="custom-textarea"
+            placeholder="Type your response here..."
+          ></textarea>
+        </div>
+
+        <!-- Fallback for other question formats (e.g., dropdown, checkbox) -->
+        <div
+          *ngIf="
+            questions[currentQuestionIndex].format !== 'multiple_choice' &&
+            questions[currentQuestionIndex].format !== 'dropdown' &&
+            questions[currentQuestionIndex].format !== 'checkbox' &&
+            questions[currentQuestionIndex].format !== 'free_response'
           "
         >
-          {{ choice.choice }}
-        </button>
+          <div *ngFor="let choice of questions[currentQuestionIndex].choices">
+            <button
+              (click)="
+                answerQuestion(choice.choice, choice.next_question_id ?? null)
+              "
+            >
+              {{ choice.choice }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Show Next Button for any format -->
+        <div
+          *ngIf="
+            currentQuestionIndex < questions.length - 1 &&
+            (selectedRadioChoice ||
+              selectedDropdownChoice ||
+              selectedChoices.length > 0)
+          "
+        >
+          <button (click)="handleNext()">Next</button>
+        </div>
+
+        <!-- Show Submit Button only for last free response question -->
+        <div *ngIf="currentQuestionIndex === questions.length - 1">
+          <button [disabled]="selectedChoices.length === 0">Submit</button>
+        </div>
       </div>
     </div>
-
-    <!-- Show Next Button for any format -->
-    <div
-      *ngIf="
-        currentQuestionIndex < questions.length - 1 &&
-        (selectedRadioChoice ||
-          selectedDropdownChoice ||
-          selectedChoices.length > 0)
-      "
-    >
-      <button (click)="handleNext()">Next</button>
-    </div>
-
-    <!-- Show Submit Button only for last free response question -->
-    <div *ngIf="currentQuestionIndex === questions.length - 1">
-      <button [disabled]="selectedChoices.length === 0">Submit</button>
-    </div>
   </div>
+
+  <ng-template #noOptions>
+    <p>No options available for this question.</p>
+  </ng-template>
+
+  <ng-template #loadingTemplate>
+    <p>Loading questions...</p>
+  </ng-template>
 </div>
-
-<ng-template #noOptions>
-  <p>No options available for this question.</p>
-</ng-template>
-
-<ng-template #loadingTemplate>
-  <p>Loading questions...</p>
-</ng-template>

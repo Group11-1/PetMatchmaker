@@ -6,10 +6,12 @@ import { AuthService } from '../core/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Question } from '../core/models/questionnaire.model';
 import { Choice } from '../core/models/questionnaire.model';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPaw } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-questionnaire',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule],
   templateUrl: './questionnaire.component.html',
   styleUrl: './questionnaire.component.css',
 })
@@ -24,6 +26,8 @@ export class QuestionnaireComponent implements OnInit {
 
   selectedRadioChoice: string = '';
   selectedDropdownChoice: string = '';
+
+  faPaw = faPaw;
 
   constructor(
     private authService: AuthService,
@@ -45,6 +49,7 @@ export class QuestionnaireComponent implements OnInit {
       next: (data) => {
         this.questions = data.map((q) => ({
           id: q.id,
+          section_id: q.section_id,
           question: q.question,
           format: q.format,
           choices: q.choices,
@@ -160,5 +165,44 @@ export class QuestionnaireComponent implements OnInit {
 
     console.log('Moving to next question at index:', nextQuestionIndex);
     this.currentQuestionIndex = nextQuestionIndex;
+  }
+
+  getSectionHeader(): { title: string; icon: string; bgColor: string } {
+    const sectionId = this.questions[this.currentQuestionIndex]?.section_id;
+
+    switch (sectionId) {
+      case 4:
+        return {
+          title: 'Pet Preferences',
+          icon: '🐾',
+          bgColor: 'pet-preferences',
+        };
+      case 1:
+        return {
+          title: 'Your Place, Their Space',
+          icon: '🏡',
+          bgColor: 'place-space',
+        };
+      case 2:
+        return {
+          title: 'A Peek Into Your Lifestyle',
+          icon: '👀',
+          bgColor: 'lifestyle',
+        };
+      case 3:
+        return {
+          title: 'Your Commitment To Care',
+          icon: '❤️',
+          bgColor: 'commitment',
+        };
+      case 5:
+        return {
+          title: 'Additional Information',
+          icon: '📝',
+          bgColor: 'additional-info',
+        };
+      default:
+        return { title: 'Questionnaire', icon: '❓', bgColor: 'default-bg' };
+    }
   }
 }
