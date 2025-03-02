@@ -30,6 +30,14 @@ export class QuestionnaireComponent implements OnInit {
 
   selectedChoicesMap: { [key: number]: string[] } = {};
 
+  history: {
+    questionId: number;
+    answer: string | string[];
+    nextQuestionId: number | null;
+  }[] = [];
+  selectedRadioAnswers: { [index: number]: string } = {};
+  selectedDropdownAnswers: { [index: number]: string } = {};
+
   constructor(
     private authService: AuthService,
     private http: HttpClient,
@@ -65,18 +73,37 @@ export class QuestionnaireComponent implements OnInit {
     });
   }
 
-  onDropdownChange(event: any): void {
-    this.selectedDropdownChoice = event.target.value; // Store selected choice
+  onDropdownChange(event: any, questionIndex: number): void {
+    const selectedValue = event.target.value;
 
-    const selectedChoiceObject = this.questions[
-      this.currentQuestionIndex
-    ].choices.find((choice) => choice.choice === this.selectedDropdownChoice);
+    // Initialize selectedChoicesMap for this question index if not already initialized
+    if (!this.selectedChoicesMap[questionIndex]) {
+      this.selectedChoicesMap[questionIndex] = []; // Initialize as an empty array
+    }
+
+    // Update selectedChoicesMap for this question
+    this.selectedChoicesMap[questionIndex] = [selectedValue]; // Store selected value in array
+
+    // Find the selected choice object from the choices array
+    const selectedChoiceObject = this.questions[questionIndex].choices.find(
+      (choice) => choice.choice === selectedValue
+    );
 
     if (selectedChoiceObject) {
       console.log('Dropdown selected:', selectedChoiceObject);
     } else {
       console.error('Selected choice not found in choices array!');
     }
+  }
+
+  get selectedChoice(): string {
+    // Ensure selectedChoicesMap[currentQuestionIndex] is initialized before accessing
+    return this.selectedChoicesMap[this.currentQuestionIndex]?.[0] || ''; // Default to empty string if undefined
+  }
+
+  set selectedChoice(value: string) {
+    // Set the selected value in the map
+    this.selectedChoicesMap[this.currentQuestionIndex] = [value];
   }
 
   onCheckboxChange(
@@ -115,6 +142,9 @@ export class QuestionnaireComponent implements OnInit {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedRadioChoice
       );
+
+      // Store the radio button answer
+      this.responses[this.currentQuestionIndex] = this.selectedRadioChoice; // Store in responses
     }
 
     // Check dropdown selection (only if radio hasn't already assigned selectedChoice)
@@ -122,6 +152,9 @@ export class QuestionnaireComponent implements OnInit {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedDropdownChoice
       );
+
+      // Store the dropdown answer
+      this.responses[this.currentQuestionIndex] = this.selectedDropdownChoice; // Store in responses
     }
 
     // Check checkbox selections (using selectedChoicesMap instead of selectedChoices)
@@ -135,27 +168,6 @@ export class QuestionnaireComponent implements OnInit {
         selectedCheckboxChoices.includes(choice.choice)
       );
 
-      // Error handling for multiple choices when single-answer question
-      if (
-        selectedChoiceObjects.length > 1 &&
-        this.questions[this.currentQuestionIndex].answer_type === 'single'
-      ) {
-        this.errorMessage =
-          'Cannot select more than one choice for a single-answer question';
-        this.showError = true;
-        setTimeout(() => {
-          this.showError = false;
-        }, 5000);
-        return;
-      } else if (
-        selectedChoiceObjects.length > 0 &&
-        this.questions[this.currentQuestionIndex].answer_type === 'multiple'
-      ) {
-        // For multiple-answer questions, we don't need to set selectedChoice individually
-        selectedChoice = selectedChoiceObjects[0]; // Just set it to any valid choice from the multiple selections
-        this.showError = false; // Reset any errors if multiple choices are allowed
-      }
-
       // Proceed logic for valid selections
       if (selectedChoiceObjects.length === 1 && !selectedChoice) {
         selectedChoice = selectedChoiceObjects[0];
@@ -168,7 +180,12 @@ export class QuestionnaireComponent implements OnInit {
     if (selectedChoice) {
       const nextQuestionId = selectedChoice.next_question_id ?? null;
       if (nextQuestionId !== null) {
-        console.log('Proceeding to next question:', selectedChoice);
+        this.history.push({
+          questionId: this.questions[this.currentQuestionIndex].id,
+          answer: selectedChoice.choice,
+          nextQuestionId,
+        });
+
         this.answerQuestion(selectedChoice.choice, nextQuestionId);
       } else {
         console.error('No next question ID provided, cannot proceed!');
@@ -210,6 +227,33 @@ export class QuestionnaireComponent implements OnInit {
     this.currentQuestionIndex = nextQuestionIndex;
   }
 
+  handleBack() {
+    if (this.history.length > 0) {
+      const lastEntry = this.history.pop(); // Remove the last entry from history
+
+      // Set the current question to the last question in the history
+      this.currentQuestionIndex = this.questions.findIndex(
+        (q) => q.id === lastEntry?.questionId
+      );
+
+      // Optionally, reset the answer based on what was selected previously
+      if (lastEntry) {
+        const storedAnswer = lastEntry.answer;
+
+        // Restore radio button selection
+        if (this.responses[this.currentQuestionIndex]) {
+          this.selectedRadioChoice = this.responses[this.currentQuestionIndex];
+        }
+
+        // Restore dropdown selection
+        if (this.responses[this.currentQuestionIndex]) {
+          this.selectedDropdownChoice =
+            this.responses[this.currentQuestionIndex];
+        }
+      }
+    }
+  }
+
   getSectionHeader(): { title: string; icon: string; bgColor: string } {
     const sectionId = this.questions[this.currentQuestionIndex]?.section_id;
 
@@ -246,12 +290,6 @@ export class QuestionnaireComponent implements OnInit {
         };
       default:
         return { title: 'Questionnaire', icon: '❓', bgColor: 'default-bg' };
-    }
-  }
-
-  handleBack() {
-    if (this.currentQuestionIndex > 0) {
-      this.currentQuestionIndex--;
     }
   }
 

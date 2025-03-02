@@ -37,7 +37,7 @@
               type="radio"
               name="question{{ questions[currentQuestionIndex].id }}"
               [value]="choice.choice"
-              [(ngModel)]="selectedRadioChoice"
+              [(ngModel)]="selectedChoicesMap[currentQuestionIndex]"
               class="custom-radio"
             />
             <label class="radio-label">{{ choice.choice }}</label>
@@ -48,10 +48,18 @@
         <div *ngIf="questions[currentQuestionIndex].format === 'dropdown'">
           <select
             class="custom-dropdown"
-            (change)="onDropdownChange($event)"
-            [(ngModel)]="selectedDropdownChoice"
+            (change)="onDropdownChange($event, currentQuestionIndex)"
+            [(ngModel)]="selectedChoice"
           >
-            <option value="" disabled [selected]="!selectedDropdownChoice">
+            <option
+              value=""
+              disabled
+              [selected]="
+                !selectedChoicesMap[currentQuestionIndex] ||
+                selectedChoicesMap[currentQuestionIndex].length === 0 ||
+                selectedChoicesMap[currentQuestionIndex][0] === ''
+              "
+            >
               Select an option
             </option>
             <option
@@ -166,12 +174,11 @@
       <button
         *ngIf="
           currentQuestionIndex < questions.length - 1 &&
-          (selectedRadioChoice ||
-            selectedDropdownChoice ||
+          (selectedChoicesMap[currentQuestionIndex] ||
             (questions[currentQuestionIndex].answer_type === 'single' &&
-              selectedChoices.length === 1) ||
+              selectedChoicesMap[currentQuestionIndex]?.length === 1) ||
             (questions[currentQuestionIndex].answer_type !== 'single' &&
-              selectedChoices.length > 0))
+              selectedChoicesMap[currentQuestionIndex].length > 0))
         "
         (click)="handleNext()"
       >
@@ -180,7 +187,7 @@
 
       <!-- Submit Button only for last free response question -->
       <div *ngIf="currentQuestionIndex === questions.length - 1">
-        <button [disabled]="selectedChoices.length === 0">Submit</button>
+        <button>Submit</button>
       </div>
     </div>
   </div>
