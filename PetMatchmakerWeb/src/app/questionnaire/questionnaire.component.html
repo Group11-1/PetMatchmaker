@@ -63,6 +63,10 @@
           </select>
         </div>
 
+        <div *ngIf="showError" class="error-message">
+          <p>{{ errorMessage }}</p>
+        </div>
+
         <!-- Checkbox Format -->
         <div *ngIf="questions[currentQuestionIndex].format === 'checkbox'">
           <div
@@ -73,9 +77,22 @@
               type="checkbox"
               class="custom-checkbox"
               [value]="choice.choice"
-              (change)="onCheckboxChange(choice, $event)"
+              [checked]="
+                (selectedChoicesMap[currentQuestionIndex] || []).includes(
+                  choice.choice
+                )
+              "
+              (change)="
+                onCheckboxChange(
+                  choice,
+                  $event,
+                  questions[currentQuestionIndex].answer_type,
+                  currentQuestionIndex
+                )
+              "
               id="checkbox-{{ choice.choice }}"
             />
+
             <label class="checkbox-label" for="checkbox-{{ choice.choice }}">
               {{ choice.choice }}
             </label>
@@ -151,7 +168,10 @@
           currentQuestionIndex < questions.length - 1 &&
           (selectedRadioChoice ||
             selectedDropdownChoice ||
-            selectedChoices.length > 0)
+            (questions[currentQuestionIndex].answer_type === 'single' &&
+              selectedChoices.length === 1) ||
+            (questions[currentQuestionIndex].answer_type !== 'single' &&
+              selectedChoices.length > 0))
         "
         (click)="handleNext()"
       >

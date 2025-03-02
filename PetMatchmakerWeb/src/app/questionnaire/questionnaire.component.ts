@@ -25,6 +25,11 @@ export class QuestionnaireComponent implements OnInit {
   selectedRadioChoice: string = '';
   selectedDropdownChoice: string = '';
 
+  errorMessage: string | null = null;
+  showError: boolean = false;
+
+  selectedChoicesMap: { [key: number]: string[] } = {};
+
   constructor(
     private authService: AuthService,
     private http: HttpClient,
@@ -74,15 +79,30 @@ export class QuestionnaireComponent implements OnInit {
     }
   }
 
-  onCheckboxChange(choice: Choice, event: any): void {
-    if (event.target.checked) {
-      if (!this.selectedChoices.includes(choice.choice)) {
-        this.selectedChoices.push(choice.choice);
-      }
+  onCheckboxChange(
+    choice: Choice,
+    event: any,
+    answerType: string,
+    questionIndex: number
+  ): void {
+    if (!this.selectedChoicesMap[questionIndex]) {
+      this.selectedChoicesMap[questionIndex] = []; // Ensure it's always initialized
+    }
+
+    if (answerType === 'single') {
+      this.selectedChoicesMap[questionIndex] = [choice.choice]; // Enforce single selection
     } else {
-      const index = this.selectedChoices.indexOf(choice.choice);
-      if (index > -1) {
-        this.selectedChoices.splice(index, 1);
+      if (event.target.checked) {
+        if (!this.selectedChoicesMap[questionIndex].includes(choice.choice)) {
+          this.selectedChoicesMap[questionIndex].push(choice.choice);
+        }
+      } else {
+        const index = this.selectedChoicesMap[questionIndex].indexOf(
+          choice.choice
+        );
+        if (index > -1) {
+          this.selectedChoicesMap[questionIndex].splice(index, 1);
+        }
       }
     }
   }
@@ -104,23 +124,49 @@ export class QuestionnaireComponent implements OnInit {
       );
     }
 
-    // Check checkbox selections (multiple choices)
-    if (!selectedChoice && this.selectedChoices.length > 0) {
+    // Check checkbox selections (using selectedChoicesMap instead of selectedChoices)
+    const selectedCheckboxChoices =
+      this.selectedChoicesMap[this.currentQuestionIndex] || [];
+
+    if (!selectedChoice && selectedCheckboxChoices.length > 0) {
       const selectedChoiceObjects = this.questions[
         this.currentQuestionIndex
       ].choices.filter((choice) =>
-        this.selectedChoices.includes(choice.choice)
+        selectedCheckboxChoices.includes(choice.choice)
       );
 
-      if (selectedChoiceObjects.length > 0) {
-        selectedChoice =
-          selectedChoiceObjects[selectedChoiceObjects.length - 1]; // Pick the last selected checkbox
+      // Error handling for multiple choices when single-answer question
+      if (
+        selectedChoiceObjects.length > 1 &&
+        this.questions[this.currentQuestionIndex].answer_type === 'single'
+      ) {
+        this.errorMessage =
+          'Cannot select more than one choice for a single-answer question';
+        this.showError = true;
+        setTimeout(() => {
+          this.showError = false;
+        }, 5000);
+        return;
+      } else if (
+        selectedChoiceObjects.length > 0 &&
+        this.questions[this.currentQuestionIndex].answer_type === 'multiple'
+      ) {
+        // For multiple-answer questions, we don't need to set selectedChoice individually
+        selectedChoice = selectedChoiceObjects[0]; // Just set it to any valid choice from the multiple selections
+        this.showError = false; // Reset any errors if multiple choices are allowed
+      }
+
+      // Proceed logic for valid selections
+      if (selectedChoiceObjects.length === 1 && !selectedChoice) {
+        selectedChoice = selectedChoiceObjects[0];
       }
     }
 
-    if (selectedChoice) {
-      const nextQuestionId = selectedChoice.next_question_id ?? null; // Handle undefined case
+    this.errorMessage = null;
 
+    // Proceed to next question only if a valid selection exists
+    if (selectedChoice) {
+      const nextQuestionId = selectedChoice.next_question_id ?? null;
       if (nextQuestionId !== null) {
         console.log('Proceeding to next question:', selectedChoice);
         this.answerQuestion(selectedChoice.choice, nextQuestionId);
