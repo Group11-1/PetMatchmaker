@@ -48,6 +48,7 @@ export class QuestionnaireComponent implements OnInit {
           section_id: q.section_id,
           question: q.question,
           format: q.format,
+          answer_type: q.answer_type,
           choices: q.choices,
         }));
         this.loading = false;

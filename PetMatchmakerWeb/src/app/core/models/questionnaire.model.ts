@@ -3,6 +3,7 @@ export interface Question {
   section_id: number;
   question: string;
   format: string;
+  answer_type: string;
   choices: Choice[];
 }
 

@@ -203,6 +203,7 @@ app.get("/api/questions", (req, res) => {
           section_id: row.section_id,
           question: row.question,
           format: row.format,
+          answer_type: row.answer_type,
           choices: [],
         });
       }
