@@ -39,6 +39,8 @@ export class QuestionnaireComponent implements OnInit {
   selectedRadioAnswers: { [index: number]: string } = {};
   selectedDropdownAnswers: { [index: number]: string } = {};
 
+  isModalVisible: boolean = false;
+
   constructor(
     private authService: AuthService,
     private http: HttpClient,
@@ -360,5 +362,13 @@ export class QuestionnaireComponent implements OnInit {
           console.error('Error submitting questionnaire:', err);
         },
       });
+  }
+
+  openModal() {
+    this.isModalVisible = true;
+  }
+
+  closeModal() {
+    this.isModalVisible = false;
   }
 }

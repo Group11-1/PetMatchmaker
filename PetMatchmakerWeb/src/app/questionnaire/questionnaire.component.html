@@ -1,7 +1,7 @@
 <div [ngClass]="getSectionHeader().bgColor">
   <!-- Exit Logo Section -->
   <div class="exit-logo">
-    <button (click)="logout()">Exit Questionnaire</button>
+    <button (click)="openModal()">Exit Questionnaire</button>
     <img
       class="logo"
       src="assets/img/Website Icon.png"
@@ -190,6 +190,23 @@
       <div *ngIf="currentQuestionIndex === questions.length - 1">
         <button (click)="onSubmit()">Submit</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="isModalVisible">
+  <div class="modal">
+    <button class="close-btn" (click)="closeModal()">X</button>
+    <img src="/assets/img/Login Screen Pets.png" alt="Pets" class="modal-img" />
+    <div class="modal-header">
+      <h2>
+        You haven't finished the questionnaire, would you like to save your
+        progress?
+      </h2>
+    </div>
+    <div class="modal-content">
+      <button>No</button>
+      <button>Yes</button>
     </div>
   </div>
 </div>
