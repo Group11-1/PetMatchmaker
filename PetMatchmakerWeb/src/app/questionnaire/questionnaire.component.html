@@ -37,7 +37,7 @@
               type="radio"
               name="question{{ questions[currentQuestionIndex].id }}"
               [value]="choice.choice"
-              [(ngModel)]="selectedChoicesMap[currentQuestionIndex]"
+              [(ngModel)]="selectedRadioChoicesMap[currentQuestionIndex]"
               class="custom-radio"
             />
             <label class="radio-label">{{ choice.choice }}</label>
@@ -176,6 +176,7 @@
         *ngIf="
           currentQuestionIndex < questions.length - 1 &&
           (selectedChoicesMap[currentQuestionIndex] ||
+            selectedRadioChoicesMap[currentQuestionIndex] ||
             (questions[currentQuestionIndex].answer_type === 'single' &&
               selectedChoicesMap[currentQuestionIndex]?.length === 1) ||
             (questions[currentQuestionIndex].answer_type !== 'single' &&

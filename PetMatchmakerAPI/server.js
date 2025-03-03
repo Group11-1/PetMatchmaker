@@ -228,39 +228,60 @@ app.get("/api/questions", (req, res) => {
 
 //Save Questionnaire progress
 app.post("/api/save-progress", (req, res) => {
-  const { user_id, question_id, answer } = req.body;
+  const { user_id, lastQuestionId, answers, free_responses } = req.body;
+
+  console.log("Received lastQuestionId:", lastQuestionId); // Debugging
 
   knexDB.transaction(async (trx) => {
     try {
-      // If the answer is a string with multiple choices (like "Dog, Apartment"),
-      // split it into separate items
-      const answers = answer.split(",").map((a) => a.trim()); // Split by comma and remove extra spaces
-
-      // Insert or update each answer as a separate record
+      // Insert or update answers
       await Promise.all(
-        answers.map(async (answerItem) => {
-          // Check if an answer already exists for the user and question
+        answers.map(async (answer) => {
           const existingAnswer = await trx("responses")
-            .where({ user_id, question_id, answer: answerItem })
+            .where({ user_id, question_id: answer.question_id })
             .first();
 
           if (existingAnswer) {
-            // If it exists, update the answer
             await trx("responses")
-              .where({ user_id, question_id, answer: answerItem })
+              .where({ user_id, question_id: answer.question_id })
               .update({
-                answer: answerItem,
+                answer: answer.answer,
               });
           } else {
-            // If it doesn't exist, insert a new answer
             await trx("responses").insert({
               user_id,
-              question_id,
-              answer: answerItem,
+              question_id: answer.question_id,
+              answer: answer.answer,
             });
           }
         })
       );
+
+      // Insert or update free responses
+      await Promise.all(
+        free_responses.map(async (response) => {
+          const existingResponse = await trx("freeresponses")
+            .where({ user_id, question_id: response.question_id })
+            .first();
+
+          if (existingResponse) {
+            await trx("freeresponses")
+              .where({ user_id, question_id: response.question_id })
+              .update({
+                response: response.response,
+              });
+          } else {
+            await trx("freeresponses").insert({
+              user_id,
+              question_id: response.question_id,
+              response: response.response,
+            });
+          }
+        })
+      );
+
+      // No need to store lastQuestionId anywhere
+      console.log("Progress saved without storing lastQuestionId.");
 
       // Commit the transaction
       await trx.commit();
@@ -347,6 +368,60 @@ app.post("/api/submit-questionnaire", (req, res) => {
       res.status(500).json({ message: "Error submitting questionnaire." });
     }
   });
+});
+
+app.get("/api/questionnaire/progress/:userId", (req, res) => {
+  const { userId } = req.params;
+
+  // Fetch user responses
+  db.query(
+    `SELECT question_id, answer FROM responses WHERE user_id = ? ORDER BY id DESC`,
+    [userId],
+    (error, responseResults) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Failed to fetch responses" });
+      }
+
+      // Debugging: Log all user responses
+      console.log("User Responses:", responseResults);
+
+      // Fetch free responses
+      db.query(
+        `SELECT question_id, response FROM freeresponses WHERE user_id = ?`,
+        [userId],
+        (error, freeResponseResults) => {
+          if (error) {
+            console.error(error);
+            return res
+              .status(500)
+              .json({ error: "Failed to fetch free responses" });
+          }
+
+          // Combine responses and free responses
+          const combinedResponses = [...responseResults];
+
+          freeResponseResults.forEach((freeResponse) => {
+            combinedResponses.push({
+              question_id: freeResponse.question_id,
+              response: freeResponse.response,
+            });
+          });
+
+          // Determine lastQuestionId based on the highest question_id
+          const lastQuestionId = Math.max(
+            ...combinedResponses.map((response) => response.question_id)
+          );
+
+          // Return combined responses and lastQuestionId
+          res.json({
+            lastQuestionId: lastQuestionId, // Ensure lastQuestionId is the highest question_id
+            responses: combinedResponses,
+          });
+        }
+      );
+    }
+  );
 });
 
 app.listen(port, () => {
