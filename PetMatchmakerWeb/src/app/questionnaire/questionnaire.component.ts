@@ -364,6 +364,48 @@ export class QuestionnaireComponent implements OnInit {
       });
   }
 
+  saveProgress(): void {
+    const userId = this.authService.getUserId();
+    if (userId === null) {
+      console.error('User ID is missing. Cannot save progress.');
+      return;
+    }
+
+    const progress = {
+      user_id: userId,
+      currentQuestionIndex: this.currentQuestionIndex,
+      responses: this.responses,
+      history: this.history,
+    };
+
+    // Format responses to get the actual selected answer (not an array)
+    const formattedResponses = Object.values(this.responses).map((answer) => {
+      // Ensure we only save a single answer, not an array or object
+      return Array.isArray(answer) ? answer[0] : answer;
+    });
+
+    // Join the array into a single string, in case there are multiple answers
+    const responsesString = formattedResponses.join(', '); // This will just save the single answer
+
+    // Log the formatted response to the console
+    console.log('Formatted Responses:', responsesString);
+
+    // Send the formatted responses as a string
+    this.questionnaireService
+      .saveProgress(userId, this.currentQuestionIndex, responsesString)
+      .subscribe({
+        next: (response) => {
+          console.log('Progress saved successfully:', response);
+
+          // Navigate to the pet-listing page upon successful save
+          this.router.navigate(['/pet-listing']);
+        },
+        error: (err) => {
+          console.error('Error saving progress:', err);
+        },
+      });
+  }
+
   openModal() {
     this.isModalVisible = true;
   }

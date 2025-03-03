@@ -226,35 +226,112 @@ app.get("/api/questions", (req, res) => {
   });
 });
 
+//Save Questionnaire progress
+app.post("/api/save-progress", (req, res) => {
+  const { user_id, question_id, answer } = req.body;
+
+  knexDB.transaction(async (trx) => {
+    try {
+      // If the answer is a string with multiple choices (like "Dog, Apartment"),
+      // split it into separate items
+      const answers = answer.split(",").map((a) => a.trim()); // Split by comma and remove extra spaces
+
+      // Insert or update each answer as a separate record
+      await Promise.all(
+        answers.map(async (answerItem) => {
+          // Check if an answer already exists for the user and question
+          const existingAnswer = await trx("responses")
+            .where({ user_id, question_id, answer: answerItem })
+            .first();
+
+          if (existingAnswer) {
+            // If it exists, update the answer
+            await trx("responses")
+              .where({ user_id, question_id, answer: answerItem })
+              .update({
+                answer: answerItem,
+              });
+          } else {
+            // If it doesn't exist, insert a new answer
+            await trx("responses").insert({
+              user_id,
+              question_id,
+              answer: answerItem,
+            });
+          }
+        })
+      );
+
+      // Commit the transaction
+      await trx.commit();
+      res.status(200).json({ message: "Progress saved successfully!" });
+    } catch (error) {
+      await trx.rollback();
+      console.error("Transaction error:", error);
+      res.status(500).json({ message: "Error saving progress." });
+    }
+  });
+});
+
 //Submit Questionnaire
 app.post("/api/submit-questionnaire", (req, res) => {
   const { user_id, answers, free_responses } = req.body;
 
   knexDB.transaction(async (trx) => {
     try {
-      // Insert answers
+      // Insert or update answers
       await Promise.all(
-        answers.map((answer) =>
-          trx("responses").insert({
-            user_id,
-            question_id: answer.question_id,
-            answer: answer.answer,
-          })
-        )
+        answers.map(async (answer) => {
+          // Check if the answer already exists for this user and question
+          const existingAnswer = await trx("responses")
+            .where({ user_id, question_id: answer.question_id })
+            .first();
+
+          if (existingAnswer) {
+            // If it exists, update the answer
+            await trx("responses")
+              .where({ user_id, question_id: answer.question_id })
+              .update({
+                answer: answer.answer,
+              });
+          } else {
+            // If it doesn't exist, insert a new answer
+            await trx("responses").insert({
+              user_id,
+              question_id: answer.question_id,
+              answer: answer.answer,
+            });
+          }
+        })
       );
 
-      // Insert free responses
+      // Insert or update free responses
       await Promise.all(
-        free_responses.map((response) =>
-          trx("freeresponses").insert({
-            user_id,
-            question_id: response.question_id,
-            response: response.response,
-          })
-        )
+        free_responses.map(async (response) => {
+          // Check if the free response already exists for this user and question
+          const existingResponse = await trx("freeresponses")
+            .where({ user_id, question_id: response.question_id })
+            .first();
+
+          if (existingResponse) {
+            // If it exists, update the response
+            await trx("freeresponses")
+              .where({ user_id, question_id: response.question_id })
+              .update({
+                response: response.response,
+              });
+          } else {
+            // If it doesn't exist, insert a new free response
+            await trx("freeresponses").insert({
+              user_id,
+              question_id: response.question_id,
+              response: response.response,
+            });
+          }
+        })
       );
 
-      // Update `profile_completed` column to 1 (true)
+      // Update `profile_completed` column to 1 (true) if necessary
       await trx("users")
         .where({ id: user_id })
         .update({ profile_completed: 1 });

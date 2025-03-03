@@ -31,4 +31,13 @@ export class QuestionnaireService {
       submissionData
     );
   }
+
+  saveProgress(
+    userId: number,
+    questionId: number,
+    answer: string
+  ): Observable<any> {
+    const body = { user_id: userId, question_id: questionId, answer };
+    return this.http.post<any>('http://localhost:3000/api/save-progress', body);
+  }
 }
