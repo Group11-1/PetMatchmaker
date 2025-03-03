@@ -1,0 +1,212 @@
+<div [ngClass]="getSectionHeader().bgColor">
+  <!-- Exit Logo Section -->
+  <div class="exit-logo">
+    <button (click)="openModal()">Exit Questionnaire</button>
+    <img
+      class="logo"
+      src="assets/img/Website Icon.png"
+      alt="PetMatchmaker Logo"
+    />
+  </div>
+
+  <!-- Main Questionnaire Content -->
+  <div *ngIf="!loading && questions.length > 0; else loadingTemplate">
+    <h1>
+      {{ getSectionHeader().title }}
+      <span>{{ getSectionHeader().icon }}</span>
+    </h1>
+    <div class="question-container">
+      <h2>{{ questions[currentQuestionIndex].question }}</h2>
+
+      <!-- Question Formats (Multiple-Choice, Dropdown, Checkbox, Free Response) -->
+      <div
+        *ngIf="
+          questions[currentQuestionIndex].choices.length > 0;
+          else noOptions
+        "
+      >
+        <!-- Multiple-Choice Format -->
+        <div
+          *ngIf="questions[currentQuestionIndex].format === 'multiple_choice'"
+        >
+          <div
+            *ngFor="let choice of questions[currentQuestionIndex].choices"
+            class="radio-container"
+          >
+            <input
+              type="radio"
+              name="question{{ questions[currentQuestionIndex].id }}"
+              [value]="choice.choice"
+              [(ngModel)]="selectedChoicesMap[currentQuestionIndex]"
+              class="custom-radio"
+            />
+            <label class="radio-label">{{ choice.choice }}</label>
+          </div>
+        </div>
+
+        <!-- Dropdown Format -->
+        <div *ngIf="questions[currentQuestionIndex].format === 'dropdown'">
+          <select
+            class="custom-dropdown"
+            (change)="onDropdownChange($event, currentQuestionIndex)"
+            [(ngModel)]="selectedChoice"
+          >
+            <option
+              value=""
+              disabled
+              [selected]="
+                !selectedChoicesMap[currentQuestionIndex] ||
+                selectedChoicesMap[currentQuestionIndex].length === 0 ||
+                selectedChoicesMap[currentQuestionIndex][0] === ''
+              "
+            >
+              Select an option
+            </option>
+            <option
+              *ngFor="let choice of questions[currentQuestionIndex].choices"
+              [value]="choice.choice"
+            >
+              {{ choice.choice }}
+            </option>
+          </select>
+        </div>
+
+        <div *ngIf="showError" class="error-message">
+          <p>{{ errorMessage }}</p>
+        </div>
+
+        <!-- Checkbox Format -->
+        <div *ngIf="questions[currentQuestionIndex].format === 'checkbox'">
+          <div
+            *ngFor="let choice of questions[currentQuestionIndex].choices"
+            class="checkbox-container"
+          >
+            <input
+              type="checkbox"
+              class="custom-checkbox"
+              [value]="choice.choice"
+              [checked]="
+                (selectedChoicesMap[currentQuestionIndex] || []).includes(
+                  choice.choice
+                )
+              "
+              (change)="
+                onCheckboxChange(
+                  choice,
+                  $event,
+                  questions[currentQuestionIndex].answer_type,
+                  currentQuestionIndex
+                )
+              "
+              id="checkbox-{{ choice.choice }}"
+            />
+
+            <label class="checkbox-label" for="checkbox-{{ choice.choice }}">
+              {{ choice.choice }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Free Response Format -->
+        <div
+          class="response-format"
+          *ngIf="questions[currentQuestionIndex].format === 'free_response'"
+        >
+          <textarea
+            [(ngModel)]="freeResponseInput"
+            class="custom-textarea"
+            placeholder="Type your response here..."
+          ></textarea>
+        </div>
+
+        <!-- Fallback for other question formats (e.g., dropdown, checkbox) -->
+        <div
+          *ngIf="
+            questions[currentQuestionIndex].format !== 'multiple_choice' &&
+            questions[currentQuestionIndex].format !== 'dropdown' &&
+            questions[currentQuestionIndex].format !== 'checkbox' &&
+            questions[currentQuestionIndex].format !== 'free_response'
+          "
+        >
+          <div *ngFor="let choice of questions[currentQuestionIndex].choices">
+            <button
+              (click)="
+                answerQuestion(choice.choice, choice.next_question_id ?? null)
+              "
+            >
+              {{ choice.choice }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Options Fallback -->
+  <ng-template #noOptions>
+    <p>No options available for this question.</p>
+  </ng-template>
+
+  <!-- Loading Template -->
+  <ng-template #loadingTemplate>
+    <p>Loading questions...</p>
+  </ng-template>
+
+  <!-- Questionnaire Navigation Section (Progress, Question Number, Back/Next Buttons) -->
+  <div class="questionnaire-navigation">
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar" [style.width.%]="getProgressPercentage()"></div>
+    </div>
+
+    <!-- Question Counter -->
+    <p class="completion-percentage">
+      {{ getProgressPercentage() }}% Completed
+    </p>
+
+    <!-- Navigation Buttons (Back and Next) -->
+    <div class="navigation-buttons">
+      <!-- Back Button -->
+      <button (click)="handleBack()" [disabled]="currentQuestionIndex === 0">
+        Back
+      </button>
+
+      <!-- Next Button (Moved from the original position) -->
+      <button
+        *ngIf="
+          currentQuestionIndex < questions.length - 1 &&
+          (selectedChoicesMap[currentQuestionIndex] ||
+            (questions[currentQuestionIndex].answer_type === 'single' &&
+              selectedChoicesMap[currentQuestionIndex]?.length === 1) ||
+            (questions[currentQuestionIndex].answer_type !== 'single' &&
+              selectedChoicesMap[currentQuestionIndex].length > 0))
+        "
+        (click)="handleNext()"
+      >
+        Next
+      </button>
+
+      <!-- Submit Button only for last free response question -->
+      <div *ngIf="currentQuestionIndex === questions.length - 1">
+        <button (click)="onSubmit()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="isModalVisible">
+  <div class="modal">
+    <button class="close-btn" (click)="closeModal()">X</button>
+    <img src="/assets/img/Login Screen Pets.png" alt="Pets" class="modal-img" />
+    <div class="modal-header">
+      <h2>
+        You haven't finished the questionnaire, would you like to save your
+        progress?
+      </h2>
+    </div>
+    <div class="modal-content">
+      <button (click)="closeModal()">No</button>
+      <button (click)="saveProgress()">Yes</button>
+    </div>
+  </div>
+</div>

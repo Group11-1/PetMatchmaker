@@ -1,15 +1,18 @@
 <!-- Display the welcome screen if not logged in -->
 <router-outlet *ngIf="!isLoggedIn"></router-outlet>
 
-<!-- Only show these elements if the user is logged in -->
-<app-header *ngIf="isLoggedIn"></app-header>
+<!-- Display the QuestionnaireComponent when navigating to /questionnaire -->
+<router-outlet *ngIf="isLoggedIn || !hideLayout"></router-outlet>
+
+<!-- Only show these elements if the user is logged in and hideLayout is false -->
+<app-header *ngIf="isLoggedIn && !hideLayout"></app-header>
 
 <!-- Display background images and container when logged in -->
-<div *ngIf="isLoggedIn" class="background-image-Paws"></div>
+<div *ngIf="isLoggedIn && !hideLayout" class="background-image-Paws"></div>
 
-<div *ngIf="isLoggedIn" class="container">
-  <div *ngIf="isLoggedIn" class="background-image-Cat"></div>
-  <div *ngIf="isLoggedIn" class="background-image-Dog"></div>
+<div *ngIf="isLoggedIn && !hideLayout" class="container">
+  <div class="background-image-Cat"></div>
+  <div class="background-image-Dog"></div>
 </div>
 
-<app-footer *ngIf="isLoggedIn"></app-footer>
+<app-footer *ngIf="isLoggedIn && !hideLayout"></app-footer>

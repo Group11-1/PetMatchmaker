@@ -33,15 +33,11 @@ export class LoginComponent {
         // Save role if needed
         localStorage.setItem('role', response.role);
 
-        // Check if the user is an admin using the getter method
-        if (this.authService.getIsAdmin()) {
-          // Redirecting to questionnaire for time being
-          this.router.navigate(['/questionnaire']);
+        // Check if profile is completed
+        if (response.profile_completed) {
+          this.router.navigate(['/pet-listing']); // Redirect to pet-listing
         } else {
-          // Redirect to the default user dashboard or questionnaire if not an admin
-          const returnUrl =
-            this.route.snapshot.queryParams['returnUrl'] || '/questionnaire';
-          this.router.navigate([returnUrl]);
+          this.router.navigate(['/questionnaire']); // Redirect to questionnaire
         }
       },
       (error) => {

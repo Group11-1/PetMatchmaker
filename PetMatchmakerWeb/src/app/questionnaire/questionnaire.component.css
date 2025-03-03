@@ -1,1 +1,349 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  transition: background-color 0.3s ease;
+  box-sizing: border-box;
+  padding: 0;
+}
 
+/* Section-specific background colors */
+.pet-preferences {
+  background-color: #e6f7ff; /* Light Blue */
+}
+
+.place-space {
+  background-color: #f8f3e2; /* Light Pink */
+}
+
+.lifestyle {
+  background-color: #f3e2f8; /* Soft Yellow */
+}
+
+.commitment {
+  background-color: #e2f8e8; /* Light Green */
+}
+
+.additional-info {
+  background-color: #f8f3e2; /* Warm Beige */
+}
+
+.default-bg {
+  background-color: #f8f3e2;
+}
+
+/* Ensure that the div containing all content fills the screen */
+:host > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Page Header & Question */
+h1 {
+  padding: 20px 20px;
+  font-family: "Luckiest Guy", sans-serif;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+  padding: 10px 20px;
+  font-family: "Neucha", sans-serif;
+}
+
+/* Exit Button and Logo */
+.exit-logo {
+  display: flex;
+  justify-content: space-between; /* Space out items to opposite ends */
+  align-items: center; /* Vertically center items */
+  width: 100%; /* Ensure it takes up the full width */
+  padding: 10px; /* Adjust padding as needed */
+}
+
+.logo {
+  height: 50px; /* Adjust the logo size as needed */
+}
+
+.exit-logo button {
+  background-color: black; /* Black background */
+  color: white; /* White text color */
+  border: none; /* Remove default border */
+  padding: 10px 20px; /* Adjust padding for button size */
+  border-radius: 50px; /* Makes the button round */
+  font-family: "Luckiest Guy", sans-serif; /* Apply Luckiest Guy font */
+  font-size: 14px; /* Adjust text size */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow */
+  cursor: pointer; /* Change cursor to indicate it's clickable */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+
+.exit-logo button:hover {
+  background-color: #333; /* Darker background color on hover */
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* Enhance shadow on hover */
+}
+
+/* Question Format */
+.question-container {
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centers vertically */
+  padding-top: 90px;
+}
+
+/* Radio Button Format */
+.radio-container {
+  padding-left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between radio button and text */
+}
+
+.custom-radio {
+  appearance: none; /* Remove default styling */
+  width: 20px;
+  height: 20px;
+  border: 2px solid black; /* Black outline */
+  border-radius: 50%; /* Circular shape */
+  background-color: transparent; /* Transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.custom-radio:checked {
+  background-color: black; /* Filled black when selected */
+  border: 2px solid black;
+}
+
+.custom-radio:checked::after {
+  content: "";
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.radio-label {
+  font-family: "Neucha", sans-serif;
+  font-size: 18px;
+  color: black;
+  cursor: pointer;
+}
+
+/* Dropdown Format */
+.custom-dropdown {
+  font-family: "Neucha", cursive; /* Apply Neucha font */
+  font-size: 18px;
+  background-color: transparent; /* Transparent background */
+  border: none; /* Remove default border */
+  border-bottom: 2px solid black; /* Only bottom border */
+  margin-left: 20px;
+  padding-bottom: 5px;
+  outline: none; /* Remove default focus outline */
+  cursor: pointer;
+  width: 400px; /* Adjust width if needed */
+}
+
+/* Checkbox Format */
+.custom-checkbox {
+  appearance: none; /* Remove default styling */
+  width: 18px;
+  height: 18px;
+  margin-left: 20px;
+  border: 2px solid black; /* Only border should be visible */
+  border-radius: 5px;
+  background-color: transparent; /* Transparent background */
+  cursor: pointer;
+  position: relative;
+}
+
+.custom-checkbox:checked {
+  background-color: transparent; /* Keep background transparent */
+}
+
+.custom-checkbox:checked::after {
+  content: "✔"; /* Custom checkmark */
+  font-size: 18px;
+  color: black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+}
+
+.checkbox-label {
+  font-family: "Neucha", cursive;
+  font-size: 18px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+/* Free Response Format */
+.response-format {
+  padding-left: 20px;
+}
+
+.custom-textarea {
+  width: 600px; /* Makes it responsive */
+  min-height: 200px; /* Bigger area for long responses */
+  font-family: "Neucha", cursive; /* Sets font to Neucha */
+  font-size: 18px;
+  padding: 10px;
+  border: 2px solid black; /* Keeps only the border */
+  background-color: white; /* Transparent background */
+  resize: vertical; /* Allows user to expand the box */
+  outline: none;
+}
+
+.custom-textarea::placeholder {
+  font-family: "Neucha", cursive;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.6); /* Slightly faded placeholder */
+}
+
+/* Navigation container */
+.questionnaire-navigation {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  text-align: center;
+}
+
+/* Progress bar */
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background-color: #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: black;
+  transition: width 0.3s ease-in-out;
+}
+
+/* Question Completion */
+.completion-percentage {
+  font-size: 18px;
+  margin-bottom: 8px;
+  font-family: "Neucha", sans-serif;
+}
+
+/* Buttons */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navigation-buttons button {
+  padding: 10px 20px;
+  border: none;
+  font-family: "Luckiest Guy", sans-serif; /* Apply Luckiest Guy font */
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow */
+  cursor: pointer; /* Change cursor to indicate it's clickable */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+
+.navigation-buttons button:hover {
+  background-color: #333; /* Darker background color on hover */
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* Enhance shadow on hover */
+}
+
+.navigation-buttons button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  padding-left: 20px;
+  color: red;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 800px;
+  height: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 30px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.modal-img {
+  width: 300px; /* Adjust the size of the image */
+  margin: 0 auto 10px; /* Centers the image and adds space below */
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.modal-content {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  font-size: 30px;
+  cursor: pointer;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to right, #b6c4f5, #e2e7f8);
+  font-family: "Luckiest Guy", sans-serif;
+}
+
+.modal-content button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
