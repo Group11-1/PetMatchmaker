@@ -6,6 +6,7 @@ import { AuthService } from '../core/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Question } from '../core/models/questionnaire.model';
 import { Choice } from '../core/models/questionnaire.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-questionnaire',
@@ -41,7 +42,8 @@ export class QuestionnaireComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private http: HttpClient,
-    private questionnaireService: QuestionnaireService
+    private questionnaireService: QuestionnaireService,
+    private router: Router
   ) {}
 
   logout(): void {
@@ -142,9 +144,8 @@ export class QuestionnaireComponent implements OnInit {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedRadioChoice
       );
-
       // Store the radio button answer
-      this.responses[this.currentQuestionIndex] = this.selectedRadioChoice; // Store in responses
+      this.responses[this.currentQuestionIndex] = this.selectedRadioChoice;
     }
 
     // Check dropdown selection (only if radio hasn't already assigned selectedChoice)
@@ -152,15 +153,13 @@ export class QuestionnaireComponent implements OnInit {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedDropdownChoice
       );
-
       // Store the dropdown answer
-      this.responses[this.currentQuestionIndex] = this.selectedDropdownChoice; // Store in responses
+      this.responses[this.currentQuestionIndex] = this.selectedDropdownChoice;
     }
 
     // Check checkbox selections (using selectedChoicesMap instead of selectedChoices)
     const selectedCheckboxChoices =
       this.selectedChoicesMap[this.currentQuestionIndex] || [];
-
     if (!selectedChoice && selectedCheckboxChoices.length > 0) {
       const selectedChoiceObjects = this.questions[
         this.currentQuestionIndex
@@ -172,21 +171,32 @@ export class QuestionnaireComponent implements OnInit {
       if (selectedChoiceObjects.length === 1 && !selectedChoice) {
         selectedChoice = selectedChoiceObjects[0];
       }
+      // Store selected checkbox answers
+      this.responses[this.currentQuestionIndex] = selectedCheckboxChoices;
     }
 
-    this.errorMessage = null;
+    // Free response handling
+    if (!selectedChoice && this.freeResponseInput) {
+      // Store free response
+      this.responses[this.currentQuestionIndex] = this.freeResponseInput;
+    }
 
     // Proceed to next question only if a valid selection exists
-    if (selectedChoice) {
-      const nextQuestionId = selectedChoice.next_question_id ?? null;
+    if (selectedChoice || this.freeResponseInput) {
+      const nextQuestionId = selectedChoice?.next_question_id ?? null;
+
       if (nextQuestionId !== null) {
         this.history.push({
           questionId: this.questions[this.currentQuestionIndex].id,
-          answer: selectedChoice.choice,
+          answer: selectedChoice?.choice || this.freeResponseInput,
           nextQuestionId,
         });
 
-        this.answerQuestion(selectedChoice.choice, nextQuestionId);
+        // Move to next question
+        this.answerQuestion(
+          selectedChoice?.choice || this.freeResponseInput,
+          nextQuestionId
+        );
       } else {
         console.error('No next question ID provided, cannot proceed!');
       }
@@ -297,5 +307,58 @@ export class QuestionnaireComponent implements OnInit {
     const percentage =
       (this.currentQuestionIndex / this.questions.length) * 100;
     return Math.round(percentage);
+  }
+
+  onSubmit() {
+    const userId = this.authService.getUserId(); // Retrieve the logged-in user's ID
+
+    if (userId === null) {
+      console.error('User ID is missing. Cannot submit questionnaire.');
+      return;
+    }
+
+    // Ensure question IDs match the actual DB IDs
+    const answers = this.questions
+      .map((question, index) => ({
+        question_id: question.id, // Use actual DB ID, not array index
+        answer: Array.isArray(this.responses[index])
+          ? this.responses[index].join(', ')
+          : this.responses[index], // Handle multiple selections
+      }))
+      .filter((answer) => answer.answer !== undefined); // Remove unanswered questions
+
+    // Structure free responses separately
+    const free_responses = this.freeResponseInput
+      ? [
+          {
+            question_id: this.questions[this.questions.length - 1].id, // Ensure correct ID
+            response: this.freeResponseInput,
+          },
+        ]
+      : [];
+
+    // Debugging
+    console.log('Submitting questionnaire:', {
+      user_id: userId,
+      answers,
+      free_responses,
+    });
+
+    this.questionnaireService
+      .submitQuestionnaire(userId, answers, free_responses)
+      .subscribe({
+        next: (response) => {
+          console.log('Questionnaire submitted successfully:', response);
+
+          // Set progress to 100%
+          this.currentQuestionIndex = this.questions.length;
+
+          // Redirect to pet listing page
+          this.router.navigate(['/pet-listing']);
+        },
+        error: (err) => {
+          console.error('Error submitting questionnaire:', err);
+        },
+      });
   }
 }

@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const db = require("./db");
+const { db, knexDB } = require("./db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { format } = require("mysql2");
@@ -103,7 +103,13 @@ app.post("/api/login", (req, res) => {
         }
       );
 
-      res.json({ token, isAdmin, role: user.role_id });
+      // Return profile_completed status along with other details
+      res.json({
+        token,
+        isAdmin,
+        role: user.role_id,
+        profile_completed: user.profile_completed, // Send profile completion status
+      });
     }
   );
 });
@@ -217,6 +223,52 @@ app.get("/api/questions", (req, res) => {
     });
 
     res.json(Array.from(questionsMap.values()));
+  });
+});
+
+//Submit Questionnaire
+app.post("/api/submit-questionnaire", (req, res) => {
+  const { user_id, answers, free_responses } = req.body;
+
+  knexDB.transaction(async (trx) => {
+    try {
+      // Insert answers
+      await Promise.all(
+        answers.map((answer) =>
+          trx("responses").insert({
+            user_id,
+            question_id: answer.question_id,
+            answer: answer.answer,
+          })
+        )
+      );
+
+      // Insert free responses
+      await Promise.all(
+        free_responses.map((response) =>
+          trx("freeresponses").insert({
+            user_id,
+            question_id: response.question_id,
+            response: response.response,
+          })
+        )
+      );
+
+      // Update `profile_completed` column to 1 (true)
+      await trx("users")
+        .where({ id: user_id })
+        .update({ profile_completed: 1 });
+
+      // Commit the transaction
+      await trx.commit();
+      res
+        .status(200)
+        .json({ message: "Questionnaire submitted successfully!" });
+    } catch (error) {
+      await trx.rollback();
+      console.error("Transaction error:", error);
+      res.status(500).json({ message: "Error submitting questionnaire." });
+    }
   });
 });
 

@@ -14,4 +14,21 @@ export class QuestionnaireService {
   loadQuestions(): Observable<Question[]> {
     return this.http.get<Question[]>(this.apiUrl);
   }
+
+  submitQuestionnaire(
+    user_id: number,
+    answers: any[],
+    free_responses: any[]
+  ): Observable<any> {
+    const submissionData = {
+      user_id,
+      answers,
+      free_responses,
+    };
+
+    return this.http.post(
+      'http://localhost:3000/api/submit-questionnaire',
+      submissionData
+    );
+  }
 }

@@ -113,6 +113,7 @@
           *ngIf="questions[currentQuestionIndex].format === 'free_response'"
         >
           <textarea
+            [(ngModel)]="freeResponseInput"
             class="custom-textarea"
             placeholder="Type your response here..."
           ></textarea>
@@ -187,7 +188,7 @@
 
       <!-- Submit Button only for last free response question -->
       <div *ngIf="currentQuestionIndex === questions.length - 1">
-        <button>Submit</button>
+        <button (click)="onSubmit()">Submit</button>
       </div>
     </div>
   </div>
