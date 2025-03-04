@@ -530,7 +530,12 @@ export class QuestionnaireComponent implements OnInit {
     }
   }
 
-  getSectionHeader(): { title: string; icon: string; bgColor: string } {
+  getSectionHeader(): {
+    title: string;
+    icon: string;
+    bgColor: string;
+    image: string;
+  } {
     const sectionId = this.questions[this.currentQuestionIndex]?.section_id;
 
     switch (sectionId) {
@@ -539,33 +544,43 @@ export class QuestionnaireComponent implements OnInit {
           title: 'Pet Preferences',
           icon: '🐾',
           bgColor: 'pet-preferences',
+          image: '/assets/img/Commitment Facts.png',
         };
       case 1:
         return {
           title: 'Your Place, Their Space',
           icon: '🏡',
           bgColor: 'place-space',
+          image: '/assets/img/Living Section Facts.png',
         };
       case 2:
         return {
           title: 'A Peek Into Your Lifestyle',
           icon: '👀',
           bgColor: 'lifestyle',
+          image: '/assets/img/Lifestyle Facts.png',
         };
       case 3:
         return {
           title: 'Your Commitment To Care',
           icon: '❤️',
           bgColor: 'commitment',
+          image: '/assets/img/Commitment Facts.png',
         };
       case 5:
         return {
           title: 'Additional Information',
           icon: '📝',
           bgColor: 'additional-info',
+          image: '/assets/img/Living Section Facts.png',
         };
       default:
-        return { title: 'Questionnaire', icon: '❓', bgColor: 'default-bg' };
+        return {
+          title: 'Questionnaire',
+          icon: '❓',
+          bgColor: 'default-bg',
+          image: '',
+        };
     }
   }
 
