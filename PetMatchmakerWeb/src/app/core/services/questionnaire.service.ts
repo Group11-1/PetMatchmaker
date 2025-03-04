@@ -34,19 +34,17 @@ export class QuestionnaireService {
 
   saveProgress(
     userId: number,
-    lastQuestionId: number, // This is the parameter
+    lastQuestionId: number,
     answers: any[],
     free_responses: any[]
   ) {
-    // Remove the redeclaration of lastQuestionId
-    // You can use the passed in 'lastQuestionId' directly or check if it's available.
     const finalLastQuestionId =
       lastQuestionId ??
       (answers.length > 0 ? answers[answers.length - 1].question_id : null);
 
     return this.http.post('http://localhost:3000/api/save-progress', {
       user_id: userId,
-      lastQuestionId: finalLastQuestionId, // Use 'finalLastQuestionId' here
+      lastQuestionId: finalLastQuestionId,
       answers,
       free_responses,
     });
