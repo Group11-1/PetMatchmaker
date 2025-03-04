@@ -408,6 +408,9 @@ app.get("/api/questionnaire/progress/:userId", (req, res) => {
             });
           });
 
+          // Sort responses by question_id in ascending order
+          combinedResponses.sort((a, b) => a.question_id - b.question_id);
+
           // Determine lastQuestionId based on the highest question_id
           const lastQuestionId = Math.max(
             ...combinedResponses.map((response) => response.question_id)
