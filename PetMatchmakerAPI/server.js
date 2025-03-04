@@ -166,6 +166,31 @@ app.get("/api/profile", (req, res) => {
   });
 });
 
+app.get("/api/user/profile-status/:userId", (req, res) => {
+  const userId = req.params.userId;
+
+  db.query(
+    "SELECT profile_completed FROM users WHERE id = ?",
+    [userId],
+    (error, rows) => {
+      if (error) {
+        console.error("Error fetching profile status:", error);
+        return res.status(500).json({ message: "Server error" });
+      }
+
+      console.log("Query result:", rows);
+
+      if (!rows || rows.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Ensure consistency between query result and response
+      res.setHeader("Content-Type", "application/json");
+      res.json({ profile_complete: rows[0].profile_completed }); // Changed to match the query field name
+    }
+  );
+});
+
 // Example of a protected route (Home page or other pages)
 app.get("/", (req, res) => {
   res.send("Welcome to the Pet Matchmaker Application!");

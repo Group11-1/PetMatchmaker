@@ -109,4 +109,11 @@ export class AuthService {
     }
     return null; // Return null if no token is found
   }
+
+  // Method to get profile status
+  getProfileStatus(userId: number): Observable<any> {
+    return this.http.get<any>(
+      'http://localhost:3000/api/user/profile-status/' + userId
+    );
+  }
 }

@@ -197,7 +197,11 @@
       </button>
 
       <!-- Submit Button only for last free response question -->
-      <div *ngIf="currentQuestionIndex === questions.length - 1">
+      <div
+        *ngIf="
+          currentQuestionIndex === questions.length - 1 && !profileComplete
+        "
+      >
         <button (click)="onSubmit()">Submit</button>
       </div>
     </div>
@@ -215,7 +219,7 @@
       </h2>
     </div>
     <div class="modal-content">
-      <button (click)="closeModal()">No</button>
+      <button (click)="closeModalAndExit()">No</button>
       <button (click)="saveProgress()">Yes</button>
     </div>
   </div>

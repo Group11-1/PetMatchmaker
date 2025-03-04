@@ -45,6 +45,8 @@ export class QuestionnaireComponent implements OnInit {
 
   lastQuestionId: number | null = null;
 
+  profileComplete: boolean = false;
+
   constructor(
     private authService: AuthService,
     private http: HttpClient,
@@ -67,6 +69,16 @@ export class QuestionnaireComponent implements OnInit {
       console.error('User is not logged in.');
       return;
     }
+
+    this.authService.getProfileStatus(userId).subscribe(
+      (response) => {
+        console.log('Profile Status:', response);
+        this.profileComplete = response.profile_complete === 1; // Set profileComplete based on the API response
+      },
+      (error) => {
+        console.error('Error fetching profile status:', error);
+      }
+    );
 
     // Fetch saved progress and responses if the user has previously started the questionnaire
     this.questionnaireService.getProgress(userId).subscribe({
@@ -723,10 +735,19 @@ export class QuestionnaireComponent implements OnInit {
   }
 
   openModal() {
-    this.isModalVisible = true;
+    if (this.profileComplete) {
+      this.router.navigate(['/pet-listing']); // Redirects user immediately if profile is complete
+    } else {
+      this.isModalVisible = true; // Shows the modal if the questionnaire isn't complete
+    }
   }
 
   closeModal() {
     this.isModalVisible = false;
+  }
+
+  closeModalAndExit() {
+    this.isModalVisible = false;
+    this.router.navigate(['/pet-listing']); // Redirects to the pet listing page
   }
 }
