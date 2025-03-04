@@ -456,12 +456,11 @@ export class QuestionnaireComponent implements OnInit {
     this.currentQuestionIndex = nextQuestionIndex;
   }
 
-  //changed
   handleBack() {
     console.log('handleBack() triggered');
 
     if (this.history.length > 0) {
-      const lastEntry = this.history.pop(); // Remove the last entry from history
+      const lastEntry = this.history.pop();
       console.log('Popped last entry from history:', lastEntry);
 
       // Set the current question to the last question in the history
@@ -487,7 +486,7 @@ export class QuestionnaireComponent implements OnInit {
             'multiple_choice'
           ) {
             this.selectedRadioChoicesMap[this.currentQuestionIndex] =
-              storedAnswer as string; // Restore into selectedRadioChoicesMap
+              storedAnswer as string;
             console.log(
               'Restoring Radio Button Answer:',
               this.selectedRadioChoicesMap[this.currentQuestionIndex]
@@ -515,7 +514,7 @@ export class QuestionnaireComponent implements OnInit {
               storedAnswer
             )
               ? storedAnswer
-              : [storedAnswer]; // Convert to array if it's not already an array
+              : [storedAnswer];
             console.log(
               'Restoring Checkbox Answers:',
               this.selectedChoicesMap[this.currentQuestionIndex]
@@ -628,15 +627,34 @@ export class QuestionnaireComponent implements OnInit {
       return;
     }
 
-    // Ensure question IDs match the actual DB IDs
+    // Ensure question IDs match the actual DB IDs and only send answer values
     const answers = this.questions
-      .map((question, index) => ({
-        question_id: question.id, // Use actual DB ID, not array index
-        answer: Array.isArray(this.responses[index])
-          ? this.responses[index].join(', ')
-          : this.responses[index], // Handle multiple selections
-      }))
-      .filter((answer) => answer.answer !== undefined); // Remove unanswered questions
+      .map((question, index) => {
+        let response = this.responses[index];
+
+        if (Array.isArray(response)) {
+          // Convert array to string (comma-separated values)
+          response = response.length > 0 ? response.join(', ') : '';
+        } else if (response && typeof response === 'object') {
+          // If response is an object, extract the actual 'answer' field
+          if (response.hasOwnProperty('answer')) {
+            response = response['answer']; // Extract only the 'answer' field
+          } else {
+            response = ''; // If it's an unexpected object, default to empty string
+          }
+        } else if (response !== undefined && response !== null) {
+          // Ensure non-array and non-object values are strings
+          response = String(response).trim();
+        } else {
+          response = ''; // Default to empty string
+        }
+
+        return {
+          question_id: question.id, // Use actual DB ID
+          answer: response, // Ensure string format
+        };
+      })
+      .filter((answer) => answer.answer !== ''); // Remove empty responses
 
     // Structure free responses separately
     const free_responses = this.freeResponseInput
@@ -655,6 +673,7 @@ export class QuestionnaireComponent implements OnInit {
       free_responses,
     });
 
+    // Submit to the backend
     this.questionnaireService
       .submitQuestionnaire(userId, answers, free_responses)
       .subscribe({
@@ -683,33 +702,53 @@ export class QuestionnaireComponent implements OnInit {
 
     // Ensure question IDs match the actual DB IDs
     const answers = this.questions
-      .map((question, index) => ({
-        question_id: question.id, // Use actual DB ID, not array index
-        answer: Array.isArray(this.responses[index])
-          ? this.responses[index].join(', ') // Handle multiple selections
-          : this.responses[index], // Handle single selection
-      }))
-      .filter((answer) => answer.answer !== undefined); // Remove unanswered questions
+      .map((question, index) => {
+        let response = this.responses[index];
+
+        if (Array.isArray(response)) {
+          // Convert array to string, separating items with commas
+          response = response.length > 0 ? response.join(', ') : '';
+        } else if (response && typeof response === 'object') {
+          // If the response is an object, extract the actual 'answer' value
+          if (response.hasOwnProperty('answer')) {
+            response = response['answer']; // Extract only the 'answer' field
+          } else {
+            // Handle case where response is an unexpected object format
+            response = '';
+          }
+        } else if (response !== undefined && response !== null) {
+          // Ensure non-array and non-object values are strings
+          response = String(response).trim();
+        } else {
+          response = ''; // Default to empty string
+        }
+
+        return {
+          question_id: question.id, // Use actual DB ID
+          answer: response, // Ensure string format
+        };
+      })
+      .filter((answer) => answer.answer !== ''); // Remove empty responses
 
     // Ensure answers array isn't empty and fetch the last question ID
     const lastQuestionId =
       answers.length > 0 ? answers[answers.length - 1].question_id : null;
 
-    // Validate that we have a last question ID
-    if (!lastQuestionId) {
+    if (lastQuestionId === null) {
       console.error('No last question ID found. Cannot save progress.');
       return;
     }
 
     // Structure free responses separately
-    const free_responses = this.freeResponseInput
-      ? [
-          {
-            question_id: this.questions[this.questions.length - 1].id, // Correct ID for the last question
-            response: this.freeResponseInput.trim() || '',
-          },
-        ]
-      : [];
+    const free_responses =
+      this.freeResponseInput && this.freeResponseInput.trim()
+        ? [
+            {
+              question_id: this.questions[this.questions.length - 1].id, // Ensure correct last question ID
+              response: this.freeResponseInput.trim(),
+            },
+          ]
+        : [];
 
     // Debugging
     console.log('Saving progress:', {
@@ -719,9 +758,9 @@ export class QuestionnaireComponent implements OnInit {
       free_responses,
     });
 
-    // Pass the lastQuestionId to the service
+    // Pass the lastQuestionId to the service, ensure it's not null
     this.questionnaireService
-      .saveProgress(userId, lastQuestionId, answers, free_responses) // Pass the lastQuestionId to the service
+      .saveProgress(userId, lastQuestionId ?? -1, answers, free_responses) // Fallback to -1 if lastQuestionId is null
       .subscribe({
         next: (response) => {
           console.log('Progress saved successfully:', response);
@@ -748,6 +787,6 @@ export class QuestionnaireComponent implements OnInit {
 
   closeModalAndExit() {
     this.isModalVisible = false;
-    this.router.navigate(['/pet-listing']); // Redirects to the pet listing page
+    this.router.navigate(['/pet-listing']);
   }
 }

@@ -174,11 +174,8 @@ app.get("/api/user/profile-status/:userId", (req, res) => {
     [userId],
     (error, rows) => {
       if (error) {
-        console.error("Error fetching profile status:", error);
         return res.status(500).json({ message: "Server error" });
       }
-
-      console.log("Query result:", rows);
 
       if (!rows || rows.length === 0) {
         return res.status(404).json({ message: "User not found" });
@@ -252,71 +249,66 @@ app.get("/api/questions", (req, res) => {
 });
 
 //Save Questionnaire progress
-app.post("/api/save-progress", (req, res) => {
-  const { user_id, lastQuestionId, answers, free_responses } = req.body;
+app.post("/api/save-progress", async (req, res) => {
+  const { user_id, answers, free_responses } = req.body;
 
-  console.log("Received lastQuestionId:", lastQuestionId); // Debugging
+  try {
+    await knexDB.transaction(async (trx) => {
+      // Handle answers (insert or update only if different)
+      for (const answer of answers) {
+        const existingAnswer = await trx("responses")
+          .where({ user_id, question_id: answer.question_id })
+          .first();
 
-  knexDB.transaction(async (trx) => {
-    try {
-      // Insert or update answers
-      await Promise.all(
-        answers.map(async (answer) => {
-          const existingAnswer = await trx("responses")
-            .where({ user_id, question_id: answer.question_id })
-            .first();
-
-          if (existingAnswer) {
+        if (existingAnswer) {
+          // Check if the new answer is different from the existing one
+          if (existingAnswer.answer !== answer.answer) {
+            // Only update if the answer has changed
             await trx("responses")
               .where({ user_id, question_id: answer.question_id })
-              .update({
-                answer: answer.answer,
-              });
-          } else {
-            await trx("responses").insert({
-              user_id,
-              question_id: answer.question_id,
-              answer: answer.answer,
-            });
+              .update({ answer: answer.answer });
           }
-        })
-      );
+        } else {
+          // Otherwise, insert the new answer
+          await trx("responses").insert({
+            user_id,
+            question_id: answer.question_id,
+            answer: answer.answer,
+          });
+        }
+      }
 
-      // Insert or update free responses
-      await Promise.all(
-        free_responses.map(async (response) => {
-          const existingResponse = await trx("freeresponses")
-            .where({ user_id, question_id: response.question_id })
-            .first();
+      // Handle free responses (insert or update only if different)
+      for (const response of free_responses) {
+        const existingResponse = await trx("freeresponses")
+          .where({ user_id, question_id: response.question_id })
+          .first();
 
-          if (existingResponse) {
+        if (existingResponse) {
+          // Check if the new response is different from the existing one
+          if (existingResponse.response !== response.response) {
+            // Only update if the response has changed
             await trx("freeresponses")
               .where({ user_id, question_id: response.question_id })
-              .update({
-                response: response.response,
-              });
-          } else {
-            await trx("freeresponses").insert({
-              user_id,
-              question_id: response.question_id,
-              response: response.response,
-            });
+              .update({ response: response.response });
           }
-        })
-      );
+        } else {
+          // Otherwise, insert the new free response
+          await trx("freeresponses").insert({
+            user_id,
+            question_id: response.question_id,
+            response: response.response,
+          });
+        }
+      }
 
-      // No need to store lastQuestionId anywhere
-      console.log("Progress saved without storing lastQuestionId.");
-
-      // Commit the transaction
       await trx.commit();
       res.status(200).json({ message: "Progress saved successfully!" });
-    } catch (error) {
-      await trx.rollback();
-      console.error("Transaction error:", error);
-      res.status(500).json({ message: "Error saving progress." });
-    }
-  });
+    });
+  } catch (error) {
+    console.error("Error saving progress:", error);
+    res.status(500).json({ message: "Error saving progress." });
+  }
 });
 
 //Submit Questionnaire
@@ -325,23 +317,21 @@ app.post("/api/submit-questionnaire", (req, res) => {
 
   knexDB.transaction(async (trx) => {
     try {
-      // Insert or update answers
       await Promise.all(
         answers.map(async (answer) => {
-          // Check if the answer already exists for this user and question
           const existingAnswer = await trx("responses")
             .where({ user_id, question_id: answer.question_id })
             .first();
 
           if (existingAnswer) {
-            // If it exists, update the answer
-            await trx("responses")
-              .where({ user_id, question_id: answer.question_id })
-              .update({
-                answer: answer.answer,
-              });
+            // Only update if the new answer is different
+            if (existingAnswer.answer !== answer.answer) {
+              await trx("responses")
+                .where({ user_id, question_id: answer.question_id })
+                .update({ answer: answer.answer });
+            }
           } else {
-            // If it doesn't exist, insert a new answer
+            // Insert if the answer doesn't already exist
             await trx("responses").insert({
               user_id,
               question_id: answer.question_id,
@@ -351,23 +341,22 @@ app.post("/api/submit-questionnaire", (req, res) => {
         })
       );
 
-      // Insert or update free responses
+      // Handling free responses similarly
       await Promise.all(
         free_responses.map(async (response) => {
-          // Check if the free response already exists for this user and question
           const existingResponse = await trx("freeresponses")
             .where({ user_id, question_id: response.question_id })
             .first();
 
           if (existingResponse) {
-            // If it exists, update the response
-            await trx("freeresponses")
-              .where({ user_id, question_id: response.question_id })
-              .update({
-                response: response.response,
-              });
+            // Only update if the new response is different
+            if (existingResponse.response !== response.response) {
+              await trx("freeresponses")
+                .where({ user_id, question_id: response.question_id })
+                .update({ response: response.response });
+            }
           } else {
-            // If it doesn't exist, insert a new free response
+            // Insert if the response doesn't already exist
             await trx("freeresponses").insert({
               user_id,
               question_id: response.question_id,
@@ -377,19 +366,16 @@ app.post("/api/submit-questionnaire", (req, res) => {
         })
       );
 
-      // Update `profile_completed` column to 1 (true) if necessary
       await trx("users")
         .where({ id: user_id })
         .update({ profile_completed: 1 });
 
-      // Commit the transaction
       await trx.commit();
       res
         .status(200)
         .json({ message: "Questionnaire submitted successfully!" });
     } catch (error) {
       await trx.rollback();
-      console.error("Transaction error:", error);
       res.status(500).json({ message: "Error submitting questionnaire." });
     }
   });
@@ -398,32 +384,24 @@ app.post("/api/submit-questionnaire", (req, res) => {
 app.get("/api/questionnaire/progress/:userId", (req, res) => {
   const { userId } = req.params;
 
-  // Fetch user responses
   db.query(
     `SELECT question_id, answer FROM responses WHERE user_id = ? ORDER BY id DESC`,
     [userId],
     (error, responseResults) => {
       if (error) {
-        console.error(error);
         return res.status(500).json({ error: "Failed to fetch responses" });
       }
 
-      // Debugging: Log all user responses
-      console.log("User Responses:", responseResults);
-
-      // Fetch free responses
       db.query(
         `SELECT question_id, response FROM freeresponses WHERE user_id = ?`,
         [userId],
         (error, freeResponseResults) => {
           if (error) {
-            console.error(error);
             return res
               .status(500)
               .json({ error: "Failed to fetch free responses" });
           }
 
-          // Combine responses and free responses
           const combinedResponses = [...responseResults];
 
           freeResponseResults.forEach((freeResponse) => {
@@ -433,17 +411,14 @@ app.get("/api/questionnaire/progress/:userId", (req, res) => {
             });
           });
 
-          // Sort responses by question_id in ascending order
           combinedResponses.sort((a, b) => a.question_id - b.question_id);
 
-          // Determine lastQuestionId based on the highest question_id
           const lastQuestionId = Math.max(
             ...combinedResponses.map((response) => response.question_id)
           );
 
-          // Return combined responses and lastQuestionId
           res.json({
-            lastQuestionId: lastQuestionId, // Ensure lastQuestionId is the highest question_id
+            lastQuestionId: lastQuestionId,
             responses: combinedResponses,
           });
         }
