@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
-import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
@@ -25,11 +24,6 @@ export class AuthService {
         if (response.token) {
           this.saveToken(response.token); // Save the JWT token to localStorage
           this.isAdmin = response.isAdmin; // Store the admin status
-          const userId = this.getUserId(); // Get the userId from the token
-          console.log('User ID:', userId); // Log the userId in the console
-          if (userId !== null) {
-            this.saveUserId(userId); // Save the userId to localStorage
-          }
           const userId = this.getUserId(); // Get the userId from the token
           console.log('User ID:', userId); // Log the userId in the console
           if (userId !== null) {
@@ -69,20 +63,6 @@ export class AuthService {
 
   // Sign Up & Auto Login
   signup(userData: any): Observable<any> {
-    return this.http
-      .post<any>('http://localhost:3000/api/signup', userData)
-      .pipe(
-        tap((response) => {
-          if (response.token) {
-            this.saveToken(response.token); // Save the JWT token to localStorage
-            const userId = this.getUserId(); // Get the user ID from the token
-            console.log('User ID after signup:', userId); // Debugging
-            if (userId) {
-              this.saveUserId(userId); // Save the user ID to localStorage if available
-            }
-          }
-        })
-      );
     return this.http
       .post<any>('http://localhost:3000/api/signup', userData)
       .pipe(
