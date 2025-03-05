@@ -34,10 +34,25 @@ export class QuestionnaireService {
 
   saveProgress(
     userId: number,
-    questionId: number,
-    answer: string
-  ): Observable<any> {
-    const body = { user_id: userId, question_id: questionId, answer };
-    return this.http.post<any>('http://localhost:3000/api/save-progress', body);
+    lastQuestionId: number,
+    answers: any[],
+    free_responses: any[]
+  ) {
+    const finalLastQuestionId =
+      lastQuestionId ??
+      (answers.length > 0 ? answers[answers.length - 1].question_id : null);
+
+    return this.http.post('http://localhost:3000/api/save-progress', {
+      user_id: userId,
+      lastQuestionId: finalLastQuestionId,
+      answers,
+      free_responses,
+    });
+  }
+
+  getProgress(userId: number): Observable<any> {
+    return this.http.get<any>(
+      'http://localhost:3000/api/questionnaire/progress/' + userId
+    );
   }
 }

@@ -10,11 +10,14 @@
   </div>
 
   <!-- Main Questionnaire Content -->
-  <div *ngIf="!loading && questions.length > 0; else loadingTemplate">
-    <h1>
-      {{ getSectionHeader().title }}
-      <span>{{ getSectionHeader().icon }}</span>
-    </h1>
+  <h1>
+    {{ getSectionHeader().title }}
+    <span>{{ getSectionHeader().icon }}</span>
+  </h1>
+  <div
+    *ngIf="!loading && questions.length > 0; else loadingTemplate"
+    class="questionnaire-wrapper"
+  >
     <div class="question-container">
       <h2>{{ questions[currentQuestionIndex].question }}</h2>
 
@@ -37,7 +40,7 @@
               type="radio"
               name="question{{ questions[currentQuestionIndex].id }}"
               [value]="choice.choice"
-              [(ngModel)]="selectedChoicesMap[currentQuestionIndex]"
+              [(ngModel)]="selectedRadioChoicesMap[currentQuestionIndex]"
               class="custom-radio"
             />
             <label class="radio-label">{{ choice.choice }}</label>
@@ -69,10 +72,6 @@
               {{ choice.choice }}
             </option>
           </select>
-        </div>
-
-        <div *ngIf="showError" class="error-message">
-          <p>{{ errorMessage }}</p>
         </div>
 
         <!-- Checkbox Format -->
@@ -140,6 +139,16 @@
         </div>
       </div>
     </div>
+
+    <div class="image-section">
+      <h1>Quick Pet Facts</h1>
+      <!-- Display the image for the current section -->
+      <img
+        [src]="getSectionHeader().image"
+        [alt]="getSectionHeader().title"
+        class="section-image"
+      />
+    </div>
   </div>
 
   <!-- No Options Fallback -->
@@ -171,11 +180,12 @@
         Back
       </button>
 
-      <!-- Next Button (Moved from the original position) -->
+      <!-- Next Button -->
       <button
         *ngIf="
           currentQuestionIndex < questions.length - 1 &&
           (selectedChoicesMap[currentQuestionIndex] ||
+            selectedRadioChoicesMap[currentQuestionIndex] ||
             (questions[currentQuestionIndex].answer_type === 'single' &&
               selectedChoicesMap[currentQuestionIndex]?.length === 1) ||
             (questions[currentQuestionIndex].answer_type !== 'single' &&
@@ -187,7 +197,11 @@
       </button>
 
       <!-- Submit Button only for last free response question -->
-      <div *ngIf="currentQuestionIndex === questions.length - 1">
+      <div
+        *ngIf="
+          currentQuestionIndex === questions.length - 1 && !profileComplete
+        "
+      >
         <button (click)="onSubmit()">Submit</button>
       </div>
     </div>
@@ -205,7 +219,7 @@
       </h2>
     </div>
     <div class="modal-content">
-      <button (click)="closeModal()">No</button>
+      <button (click)="closeModalAndExit()">No</button>
       <button (click)="saveProgress()">Yes</button>
     </div>
   </div>
