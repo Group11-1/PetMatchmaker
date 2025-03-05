@@ -251,7 +251,10 @@ export class QuestionnaireComponent implements OnInit {
 
   handleNext(): void {
     let selectedChoice: Choice | undefined = undefined;
+    let newAnswer: string | string[] | null = null;
+    let nextQuestionId: number | null = null; // Declare at the beginning
 
+    // Reset selected choice before processing
     if (this.responses[this.currentQuestionIndex]) {
       const preFilledAnswer = this.responses[this.currentQuestionIndex];
 
@@ -259,71 +262,88 @@ export class QuestionnaireComponent implements OnInit {
         selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
           (choice) => choice.choice === preFilledAnswer
         );
-        this.responses[this.currentQuestionIndex] = preFilledAnswer;
+        newAnswer = preFilledAnswer;
       } else if (Array.isArray(preFilledAnswer)) {
-        selectedChoice = this.questions[
-          this.currentQuestionIndex
-        ].choices.filter((choice) =>
-          preFilledAnswer.includes(choice.choice)
-        )[0];
-        this.responses[this.currentQuestionIndex] = preFilledAnswer;
+        selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
+          (choice) => preFilledAnswer.includes(choice.choice)
+        );
+        newAnswer = preFilledAnswer;
       }
     }
 
-    if (
-      !selectedChoice &&
-      this.selectedRadioChoicesMap[this.currentQuestionIndex]
-    ) {
+    // Override with the most recent selection
+    if (this.selectedRadioChoicesMap[this.currentQuestionIndex]) {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) =>
           choice.choice ===
           this.selectedRadioChoicesMap[this.currentQuestionIndex]
       );
-      this.responses[this.currentQuestionIndex] =
-        this.selectedRadioChoicesMap[this.currentQuestionIndex];
+      newAnswer = this.selectedRadioChoicesMap[this.currentQuestionIndex];
     }
 
-    if (!selectedChoice && this.selectedDropdownChoice) {
+    if (this.selectedDropdownChoice) {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedDropdownChoice
       );
-      this.responses[this.currentQuestionIndex] = this.selectedDropdownChoice;
+      newAnswer = this.selectedDropdownChoice;
     }
 
     const selectedCheckboxChoices =
       this.selectedChoicesMap[this.currentQuestionIndex] || [];
-    if (!selectedChoice && selectedCheckboxChoices.length > 0) {
+    if (selectedCheckboxChoices.length > 0) {
       const selectedChoiceObjects = this.questions[
         this.currentQuestionIndex
       ].choices.filter((choice) =>
         selectedCheckboxChoices.includes(choice.choice)
       );
-      if (selectedChoiceObjects.length === 1 && !selectedChoice) {
+
+      if (selectedChoiceObjects.length === 1) {
         selectedChoice = selectedChoiceObjects[0];
       }
-      this.responses[this.currentQuestionIndex] = selectedCheckboxChoices;
+      newAnswer = selectedCheckboxChoices;
     }
 
-    if (!selectedChoice && this.freeResponseInput) {
-      this.responses[this.currentQuestionIndex] = this.freeResponseInput;
+    if (this.freeResponseInput) {
+      newAnswer = this.freeResponseInput;
     }
 
-    if (selectedChoice || this.freeResponseInput) {
-      const nextQuestionId = selectedChoice?.next_question_id ?? null;
+    if (newAnswer !== null) {
+      // Remove any outdated history to avoid stale answers
+      this.history = this.history.filter(
+        (entry) =>
+          entry.questionId !== this.questions[this.currentQuestionIndex].id
+      );
+
+      this.responses[this.currentQuestionIndex] = newAnswer;
+
+      // Ensure `nextQuestionId` updates properly
+      nextQuestionId = selectedChoice?.next_question_id ?? null;
+
+      if (!nextQuestionId) {
+        console.warn(
+          'Warning: No explicit next question ID, falling back to sequence.'
+        );
+        nextQuestionId =
+          this.questions[this.currentQuestionIndex + 1]?.id || null;
+      }
+
+      console.log('Updated Selected Choice:', selectedChoice);
+      console.log(
+        'Updated Selected Choice Next Question ID:',
+        selectedChoice?.next_question_id
+      );
+      console.log('Updated Final Next Question ID:', nextQuestionId);
 
       if (nextQuestionId !== null) {
         this.history.push({
           questionId: this.questions[this.currentQuestionIndex].id,
-          answer: selectedChoice?.choice || this.freeResponseInput,
+          answer: newAnswer,
           nextQuestionId,
         });
 
-        this.answerQuestion(
-          selectedChoice?.choice || this.freeResponseInput,
-          nextQuestionId
-        );
+        this.answerQuestion(newAnswer, nextQuestionId);
       } else {
-        console.error('No next question ID provided, cannot proceed!');
+        console.error('No valid next question found, cannot proceed!');
       }
     } else {
       console.error('No valid selection found, unable to proceed!');
@@ -360,23 +380,19 @@ export class QuestionnaireComponent implements OnInit {
         const storedAnswer = lastEntry.answer;
 
         if (storedAnswer !== undefined && storedAnswer !== null) {
+          this.responses[this.currentQuestionIndex] = storedAnswer;
+
           if (
             this.questions[this.currentQuestionIndex]?.format ===
             'multiple_choice'
           ) {
             this.selectedRadioChoicesMap[this.currentQuestionIndex] =
               storedAnswer as string;
-          }
-
-          if (
+          } else if (
             this.questions[this.currentQuestionIndex]?.format === 'dropdown'
           ) {
-            this.selectedChoicesMap[this.currentQuestionIndex] = [
-              storedAnswer as string,
-            ];
-          }
-
-          if (
+            this.selectedDropdownChoice = storedAnswer as string;
+          } else if (
             this.questions[this.currentQuestionIndex]?.format === 'checkbox'
           ) {
             this.selectedChoicesMap[this.currentQuestionIndex] = Array.isArray(
@@ -384,9 +400,7 @@ export class QuestionnaireComponent implements OnInit {
             )
               ? storedAnswer
               : [storedAnswer];
-          }
-
-          if (
+          } else if (
             this.questions[this.currentQuestionIndex]?.format ===
             'free_response'
           ) {
@@ -394,6 +408,11 @@ export class QuestionnaireComponent implements OnInit {
           }
         }
       }
+
+      // Remove invalid history entries that no longer make sense
+      this.history = this.history.filter((entry) =>
+        Object.values(this.responses).includes(entry.answer)
+      );
     }
   }
 
