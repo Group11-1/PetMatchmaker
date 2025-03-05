@@ -12,6 +12,7 @@ import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-questionnaire',
   imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './questionnaire.component.html',
   styleUrl: './questionnaire.component.css',
 })

@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const { db, knexDB } = require("./db");
+const { db, knexDB } = require("./db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { format } = require("mysql2");
 const { format } = require("mysql2");
 const app = express();
 const port = 3000;
@@ -110,6 +112,13 @@ app.post("/api/login", (req, res) => {
         role: user.role_id,
         profile_completed: user.profile_completed, // Send profile completion status
       });
+      // Return profile_completed status along with other details
+      res.json({
+        token,
+        isAdmin,
+        role: user.role_id,
+        profile_completed: user.profile_completed, // Send profile completion status
+      });
     }
   );
 });
@@ -208,6 +217,13 @@ app.get("/api/users", (req, res) => {
 
 // Get all questions
 app.get("/api/questions", (req, res) => {
+  const query = `
+    SELECT q.id AS question_id, q.section_id, q.question, q.format, q.answer_type, 
+           c.id AS choice_id, c.choice, c.next_question_id
+    FROM questions q
+    LEFT JOIN choices c ON q.id = c.question_id
+    ORDER BY q.id, c.id`;
+
   const query = `
     SELECT q.id AS question_id, q.section_id, q.question, q.format, q.answer_type, 
            c.id AS choice_id, c.choice, c.next_question_id
