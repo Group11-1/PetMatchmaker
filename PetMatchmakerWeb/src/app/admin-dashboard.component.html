@@ -1,0 +1,94 @@
+<nav class="navbar">
+    <div class="left">
+        <ul>
+            <li><img src="/assets/img/Website Icon.png" class="petsLogo"></li>
+        </ul>
+        </div>
+        <div class="right">
+        <ul>
+            <li><img src="/assets/img/Profile Icon.png" class="profileLogo"></li>
+            <li><img src="/assets/img/Home Icon.png" class="homeLogo"></li>
+        </ul>
+    </div>
+</nav>
+
+
+<mat-sidenav-container>
+    <mat-sidenav mode="push" [(opened)]="opened">
+        <mat-list-item>
+            <div>
+            <img src="/assets/img/Dashboard Icon.png">
+            <button mat-button class="button-color position"> Dashboard</button>
+            </div>
+        </mat-list-item>
+        <mat-list-item>
+            <div>
+            <img src="/assets/img/Question Icon.png">
+            <button mat-button class="button-color position"> Questions</button>
+            </div>
+        </mat-list-item>
+        <mat-list-item>
+            <div>
+            <img src="/assets/img/Paw Print.png">
+            <button mat-button class="button-color position"> Pets</button>
+            </div>
+        </mat-list-item>
+        <mat-list-item>
+            <div>
+            <img src="/assets/img/Account Icon.png">
+            <button mat-button class="button-color position"> User Accounts</button>
+            </div>
+        </mat-list-item>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <div class="menu">
+        <button (click)="opened=!opened" class="button-color"><img src="/assets/img/Menu Icon.png" class="menuLogo"></button>
+        <img src="/assets/img/Title Bar.png" class="pipe">
+        <p>Dashboard</p>
+    </div>
+    <body>
+        <div class="rows">
+            <div>
+                <p class="topGap">Questionnaire Signups</p>
+                <div class="signUps"></div>
+            </div>
+            <div>
+                <p class="topGap">Questionnaires Completed</p>
+                <div class="completed"></div>
+            </div>
+            <div>
+                <p class="topGap">New Pet Arrivals</p>
+                <div class="arrivals"></div>
+            </div>
+        </div>
+        <div class="rows">
+            <div>
+                <p class="bottomGap">Pets Adopted Today</p>
+                <div class="adopted"></div>
+            </div>
+            <div>
+                <p class="bottomGap">Match Success Rate</p>
+                <div class="match"></div>
+            </div>
+        </div>
+        </body>
+        <nav class="bottomBar">
+            <div class="copyright">
+                <ul>
+                    <li><p>Copyright © 2025 Angels Among Us Pet Rescue All Rights Reserved</p></li>
+                </ul>
+            </div>
+            <div class="optionalLinks">
+                <ul>
+                    <li><p>Adopt</p></li>
+                    <li><p>Foster</p></li>
+                    <li><p>Volunteer</p></li>
+                    <li><p>Donate</p></li>
+                    <li><p>Financials</p></li>
+                    <li><p>About</p></li>
+                    <li><p>Shop</p></li>
+                </ul>
+            </div>
+        </nav>
+    </mat-sidenav-content>
+</mat-sidenav-container>

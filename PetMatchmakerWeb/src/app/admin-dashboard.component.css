@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Neucha&display=swap');
+/*styling top navigation bar*/
+.navbar{ 
+    background: linear-gradient(to right, #b6c4f5, #e2e7f8);
+    padding: 3px;
+    margin:0px;
+    overflow: hidden;
+}
+/*removing bullet point from items in list*/
+ul{
+    list-style-type: none;
+}
+/*centering images in the top navigation bar*/
+.navbar img{
+    display: block;
+    text-align: center;
+}
+/*placing pet logo on the left side of top navigation bar*/
+.left li{
+    float: left;
+}
+/*placing elements on the right side of the top navigation bar*/
+.right li{
+    float:right;
+    padding:5px;
+}
+/*adding space*/
+.left ul{
+    margin-left: 3px;
+}
+/*adding space*/
+.right ul{
+    margin-right: 10px;
+}
+/*styling bottom navigation bar*/
+.bottomBar{
+    background: linear-gradient(to right, #b6c4f5, #e2e7f8);
+    padding: 15px;
+    font-size: 10pt;
+    position: fixed;
+    bottom:0px;
+    width: 100%;
+    overflow: hidden;
+    font-family: "Luckiest Guy",;
+}
+/*styling and adding space to first element on left side of bottom navigation bar*/
+.copyright li{
+    font-family: "Luckiest Guy";
+    margin-left: 15px;
+}
+/*placing element to the left side of the bottom navigation bar*/
+.copyright ul{
+    float:left;
+}
+/*styling and placing elements on right side of bottom navigation bar*/
+.optionalLinks li{
+    float:right;
+    font-family: "Luckiest Guy";
+}
+/*adding space to right side elements on the bottom navigation bar*/
+.optionalLinks ul{
+    margin-right: 15px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 10px;
+   
+}
+/*resizing cat and dog logo*/
+.petsLogo {
+    width: 70px;
+}
+/*aligning elements: menu icon, pipe, and dashboard(text)*/
+.menu {
+    display: flex;
+    gap: 10px;
+    position: relative;
+    top: 10px;
+    left: 10px;
+}
+/*centered container*/
+body{
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+/*displaying box elements in row form*/
+  .rows{
+    display:flex;
+    gap: 70px;
+  }
+/*styling sign up box*/
+  .signUps{
+    width: 170px;
+    height:150px;
+    border-radius: 10px;
+    box-shadow: 0 0 7px #888888 ;
+    background-color: rgb(255, 255, 255);
+    position:relative;
+    top:20px;
+  }
+  /*adding hover feature to sign up box*/
+  .signUps:hover{
+    box-shadow: 0 0 15px #141414 ;
+  }
+  /*styling completed questionnaires box*/
+  .completed{
+    width: 170px;
+    height:150px;
+    border-radius: 10px;
+    box-shadow: 0 0 7px #888888 ;
+    background-color: rgb(255, 255, 255);
+    position:relative;
+    top:20px;
+  }
+  /*adding hover feature to completed questionnaires box*/
+  .completed:hover{
+    box-shadow: 0 0 15px #141414 ;
+  }
+  /*styling new pet arrivals box*/
+  .arrivals{
+    width: 170px;
+    height:150px;
+    border-radius: 10px;
+    box-shadow: 0 0 7px #888888 ;
+    background-color: rgb(255, 255, 255);
+    position:relative;
+    top:20px;
+  }
+  /*adding hover feature to pet arrivals box*/
+  .arrivals:hover{
+    box-shadow: 0 0 15px #141414 ;
+  }
+/*styling text*/
+  p {
+    font-family: "Luckiest Guy";
+    font-size: 12px;
+  }
+/*added space above boxes*/
+  .topGap{
+    position:relative;
+    top:13px;
+    left: 2px;
+  }
+/*added space below boxes*/
+  .bottomGap{
+    position:relative;
+    top:58px;
+    left: 2px;
+  }
+  /*styling adopted pets box*/
+  .adopted{
+    width: 170px;
+    height:150px;
+    border-radius: 10px;
+    box-shadow: 0 0 7px #888888 ;
+    background-color: rgb(255, 255, 255);
+    position:relative;
+    top:65px;
+  }
+  /*adding hover feature to adopted pets box*/
+  .adopted:hover{
+    box-shadow: 0 0 15px #141414 ;
+  }
+  /*styling match success rate box*/
+  .match{
+    width: 170px;
+    height:150px;
+    border-radius: 10px;
+    box-shadow: 0 0 7px #888888 ;
+    background-color: rgb(255, 255, 255);
+    position:relative;
+    top:65px;
+  }
+  /*adding hover feature to match success rate box*/
+  .match:hover{
+    box-shadow: 0 0 15px #141414 ;
+  }
+/*resized pipe*/
+ .pipe{
+    height: 20px;
+ }
+/*changed background color and added dimensions*/
+mat-sidenav-container {
+    height: 100%;
+    background-color: rgb(255, 255, 255);
+}
+/*hiding overflowing elements and removed curved corners on the side nav*/
+mat-sidenav, mat-sidenav-content {
+    width:100%;
+    border-radius: 0px;
+    overflow: hidden;
+}
+/*added dimensions to the side nav*/
+mat-sidenav{
+    width:170px;
+    background-color: rgb(255, 255, 255);
+}
+/*removed the default background of the buttons*/
+.button-color{
+    background: none;
+    border:none;
+    font-family: "Luckiest Guy", sans-serif;
+}
+/*adding a fixed amount of space around each listed item*/
+mat-list-item{
+  display: flex;
+  padding:12px;
+}
+/*adding hovering effect to list items*/
+mat-list-item:hover{
+  background: linear-gradient(to right, #b6c4f5, #e2e7f8);
+}
+/*positioning the text next to the icon in the side nav*/
+.position{
+  position: relative;
+  bottom: 6px;
+  left: 10px;
+}
+/*changing menu logo size*/
+.menuLogo{
+  width:20px;
+}
+/*changing home logo size*/
+.homeLogo{
+  width:27px;
+}
+/*changing profile logo size*/
+.profileLogo{
+  width:27px;
+}
