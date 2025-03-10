@@ -223,13 +223,6 @@ app.get("/api/questions", (req, res) => {
     LEFT JOIN choices c ON q.id = c.question_id
     ORDER BY q.id, c.id`;
 
-  const query = `
-    SELECT q.id AS question_id, q.section_id, q.question, q.format, q.answer_type, 
-           c.id AS choice_id, c.choice, c.next_question_id
-    FROM questions q
-    LEFT JOIN choices c ON q.id = c.question_id
-    ORDER BY q.id, c.id`;
-
   db.query(query, (err, results) => {
     if (err) {
       console.error(err);

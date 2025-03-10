@@ -86,19 +86,37 @@ export class QuestionnaireComponent implements OnInit {
         this.lastQuestionId = data.lastQuestionId;
         this.responses = data.responses;
 
+        // If there's progress, calculate where to resume
         if (this.lastQuestionId !== null) {
+          // Find the index of the last answered question based on lastQuestionId
           const lastAnsweredQuestionIndex = this.questions.findIndex(
             (question) => question.id === this.lastQuestionId
           );
 
           if (lastAnsweredQuestionIndex !== -1) {
+            // Log where we are resuming
+            console.log('Resuming from question ID:', this.lastQuestionId);
+            console.log('Resuming at index:', lastAnsweredQuestionIndex);
+
+            // Set currentQuestionIndex to the question with the lastQuestionId
             this.currentQuestionIndex = lastAnsweredQuestionIndex;
+            console.log(
+              'Resuming at question ID:',
+              this.questions[this.currentQuestionIndex].id
+            );
+          } else {
+            console.log(
+              'Could not find the last question, something went wrong.'
+            );
           }
         }
 
+        // Pre-fill responses if there is saved data
         this.preFillResponses();
       },
-      error: (err) => {},
+      error: (err) => {
+        console.error('Error loading progress:', err);
+      },
     });
   }
 
@@ -125,54 +143,80 @@ export class QuestionnaireComponent implements OnInit {
   preFillResponses(): void {
     console.log('Loading Pre-Filled Responses:', this.responses);
 
+    // Reset selections
     this.selectedRadioChoicesMap = {};
     this.selectedChoicesMap = {};
-    this.freeResponseInput = '';
-    this.history = [];
+    this.freeResponseInput = ''; // Reset free response input
+    this.history = []; // Reset history to avoid duplicate entries
 
     const responseEntries = Object.entries(this.responses);
 
     for (let i = 0; i < responseEntries.length; i++) {
       const [questionId, response] = responseEntries[i];
 
+      // Find the corresponding question
       const numericQuestionId = Number(response.question_id);
       const questionIndex = this.questions.findIndex(
         (q) => q.id === numericQuestionId
       );
 
       if (questionIndex === -1) {
+        console.warn(
+          `Question ID ${numericQuestionId} not found in questions list.`
+        );
         continue;
       }
 
       const question = this.questions[questionIndex];
 
+      console.log(`Processing Question ID: ${numericQuestionId}`);
+      console.log(`Stored Response:`, response.answer);
+      console.log(`Question Type: ${question.format}`);
+
+      // Restore answer directly in UI model
       switch (question.format) {
-        case 'multiple_choice':
+        case 'multiple_choice': // Radio button
           this.selectedRadioChoicesMap[questionIndex] =
             response.answer as string;
+          console.log(
+            'Restoring Radio Button Answer:',
+            this.selectedRadioChoicesMap[questionIndex]
+          );
           break;
 
-        case 'dropdown':
+        case 'dropdown': // Dropdown select
           this.selectedChoicesMap[questionIndex] = [response.answer as string];
+          console.log(
+            'Restoring Dropdown Answer:',
+            this.selectedChoicesMap[questionIndex]
+          );
           break;
 
-        case 'checkbox':
+        case 'checkbox': // Multiple choice checkboxes
           this.selectedChoicesMap[questionIndex] = Array.isArray(
             response.answer
           )
             ? response.answer
-            : [response.answer];
+            : [response.answer]; // Convert to array if needed
+          console.log(
+            'Restoring Checkbox Answers:',
+            this.selectedChoicesMap[questionIndex]
+          );
           break;
 
-        case 'free_response':
+        case 'free_response': // Text input
           this.freeResponseInput = response.response as string;
+          console.log('Restoring Free Response:', this.freeResponseInput);
           break;
 
         default:
+          console.warn(`Unhandled question format: ${question.format}`);
           break;
       }
 
+      // Maintain history for navigation, but exclude the last question
       if (i < responseEntries.length - 1) {
+        // Ensures it's not the last question
         this.history.push({
           questionId: numericQuestionId,
           answer: response.answer,
@@ -186,38 +230,59 @@ export class QuestionnaireComponent implements OnInit {
       }
     }
 
+    console.log('Final Selected Answers:', {
+      Radio: this.selectedRadioChoicesMap,
+      Dropdown: this.selectedChoicesMap,
+      FreeResponse: this.freeResponseInput,
+    });
+
+    // *** Ensure UI updates immediately ***
     setTimeout(() => {
       this.cdr.detectChanges();
     }, 0);
   }
 
+  // Helper method to get next_question_id from choices array based on the selected answer(s)
   getNextQuestionId(selectedAnswers: string[], question: any): number | null {
+    // Find the choice in the question's choices array that matches the selected answer(s)
     const choice = question.choices.find((choice: any) =>
       selectedAnswers.includes(choice.choice)
     );
 
+    // Return the next_question_id of the matched choice, or null if not found
     return choice ? choice.next_question_id : null;
   }
 
   onDropdownChange(event: any, questionIndex: number): void {
     const selectedValue = event.target.value;
 
+    // Initialize selectedChoicesMap for this question index if not already initialized
     if (!this.selectedChoicesMap[questionIndex]) {
-      this.selectedChoicesMap[questionIndex] = [];
+      this.selectedChoicesMap[questionIndex] = []; // Initialize as an empty array
     }
 
-    this.selectedChoicesMap[questionIndex] = [selectedValue];
+    // Update selectedChoicesMap for this question
+    this.selectedChoicesMap[questionIndex] = [selectedValue]; // Store selected value in array
 
+    // Find the selected choice object from the choices array
     const selectedChoiceObject = this.questions[questionIndex].choices.find(
       (choice) => choice.choice === selectedValue
     );
+
+    if (selectedChoiceObject) {
+      console.log('Dropdown selected:', selectedChoiceObject);
+    } else {
+      console.error('Selected choice not found in choices array!');
+    }
   }
 
   get selectedChoice(): string {
-    return this.selectedChoicesMap[this.currentQuestionIndex]?.[0] || '';
+    // Ensure selectedChoicesMap[currentQuestionIndex] is initialized before accessing
+    return this.selectedChoicesMap[this.currentQuestionIndex]?.[0] || ''; // Default to empty string if undefined
   }
 
   set selectedChoice(value: string) {
+    // Set the selected value in the map
     this.selectedChoicesMap[this.currentQuestionIndex] = [value];
   }
 
@@ -228,11 +293,11 @@ export class QuestionnaireComponent implements OnInit {
     questionIndex: number
   ): void {
     if (!this.selectedChoicesMap[questionIndex]) {
-      this.selectedChoicesMap[questionIndex] = [];
+      this.selectedChoicesMap[questionIndex] = []; // Ensure it's always initialized
     }
 
     if (answerType === 'single') {
-      this.selectedChoicesMap[questionIndex] = [choice.choice];
+      this.selectedChoicesMap[questionIndex] = [choice.choice]; // Enforce single selection
     } else {
       if (event.target.checked) {
         if (!this.selectedChoicesMap[questionIndex].includes(choice.choice)) {
@@ -249,101 +314,110 @@ export class QuestionnaireComponent implements OnInit {
     }
   }
 
+  //changed
   handleNext(): void {
-    let selectedChoice: Choice | undefined = undefined;
-    let newAnswer: string | string[] | null = null;
-    let nextQuestionId: number | null = null; // Declare at the beginning
+    console.log('handleNext() triggered');
 
-    // Reset selected choice before processing
+    let selectedChoice: Choice | undefined = undefined;
+
+    // Check for pre-filled answer first
     if (this.responses[this.currentQuestionIndex]) {
       const preFilledAnswer = this.responses[this.currentQuestionIndex];
 
+      console.log('Pre-filled answer found:', preFilledAnswer);
+
+      // Identify if it's a radio button, dropdown, or checkbox, and set the selection
       if (typeof preFilledAnswer === 'string') {
         selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
           (choice) => choice.choice === preFilledAnswer
         );
-        newAnswer = preFilledAnswer;
+        this.responses[this.currentQuestionIndex] = preFilledAnswer;
+        console.log('Pre-filled Radio Answer:', preFilledAnswer);
       } else if (Array.isArray(preFilledAnswer)) {
-        selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
-          (choice) => preFilledAnswer.includes(choice.choice)
-        );
-        newAnswer = preFilledAnswer;
+        selectedChoice = this.questions[
+          this.currentQuestionIndex
+        ].choices.filter((choice) =>
+          preFilledAnswer.includes(choice.choice)
+        )[0];
+        this.responses[this.currentQuestionIndex] = preFilledAnswer;
+        console.log('Pre-filled Checkbox Answers:', preFilledAnswer);
       }
     }
 
-    // Override with the most recent selection
-    if (this.selectedRadioChoicesMap[this.currentQuestionIndex]) {
+    // Check radio button selection (for new selections)
+    if (
+      !selectedChoice &&
+      this.selectedRadioChoicesMap[this.currentQuestionIndex]
+    ) {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) =>
           choice.choice ===
           this.selectedRadioChoicesMap[this.currentQuestionIndex]
       );
-      newAnswer = this.selectedRadioChoicesMap[this.currentQuestionIndex];
+      this.responses[this.currentQuestionIndex] =
+        this.selectedRadioChoicesMap[this.currentQuestionIndex];
+      console.log(
+        'Radio Answer selected:',
+        this.selectedRadioChoicesMap[this.currentQuestionIndex]
+      );
     }
 
-    if (this.selectedDropdownChoice) {
+    // Check dropdown selection (for new selections)
+    if (!selectedChoice && this.selectedDropdownChoice) {
       selectedChoice = this.questions[this.currentQuestionIndex].choices.find(
         (choice) => choice.choice === this.selectedDropdownChoice
       );
-      newAnswer = this.selectedDropdownChoice;
+      this.responses[this.currentQuestionIndex] = this.selectedDropdownChoice;
+      console.log('Dropdown Answer selected:', this.selectedDropdownChoice);
     }
 
+    // Check checkbox selections (for new selections)
     const selectedCheckboxChoices =
       this.selectedChoicesMap[this.currentQuestionIndex] || [];
-    if (selectedCheckboxChoices.length > 0) {
+    if (!selectedChoice && selectedCheckboxChoices.length > 0) {
       const selectedChoiceObjects = this.questions[
         this.currentQuestionIndex
       ].choices.filter((choice) =>
         selectedCheckboxChoices.includes(choice.choice)
       );
-
-      if (selectedChoiceObjects.length === 1) {
+      if (selectedChoiceObjects.length === 1 && !selectedChoice) {
         selectedChoice = selectedChoiceObjects[0];
       }
-      newAnswer = selectedCheckboxChoices;
+      this.responses[this.currentQuestionIndex] = selectedCheckboxChoices;
+      console.log('Checkbox Answers selected:', selectedCheckboxChoices);
     }
 
-    if (this.freeResponseInput) {
-      newAnswer = this.freeResponseInput;
+    // Free response handling
+    if (!selectedChoice && this.freeResponseInput) {
+      this.responses[this.currentQuestionIndex] = this.freeResponseInput;
+      console.log('Free Response Answer:', this.freeResponseInput);
     }
 
-    if (newAnswer !== null) {
-      // Remove any outdated history to avoid stale answers
-      this.history = this.history.filter(
-        (entry) =>
-          entry.questionId !== this.questions[this.currentQuestionIndex].id
-      );
-
-      this.responses[this.currentQuestionIndex] = newAnswer;
-
-      // Ensure `nextQuestionId` updates properly
-      nextQuestionId = selectedChoice?.next_question_id ?? null;
-
-      if (!nextQuestionId) {
-        console.warn(
-          'Warning: No explicit next question ID, falling back to sequence.'
-        );
-        nextQuestionId =
-          this.questions[this.currentQuestionIndex + 1]?.id || null;
-      }
-
-      console.log('Updated Selected Choice:', selectedChoice);
-      console.log(
-        'Updated Selected Choice Next Question ID:',
-        selectedChoice?.next_question_id
-      );
-      console.log('Updated Final Next Question ID:', nextQuestionId);
+    // Proceed to next question only if a valid selection exists
+    if (selectedChoice || this.freeResponseInput) {
+      const nextQuestionId = selectedChoice?.next_question_id ?? null;
+      console.log('Next Question ID:', nextQuestionId);
 
       if (nextQuestionId !== null) {
         this.history.push({
           questionId: this.questions[this.currentQuestionIndex].id,
-          answer: newAnswer,
+          answer: selectedChoice?.choice || this.freeResponseInput,
           nextQuestionId,
         });
 
-        this.answerQuestion(newAnswer, nextQuestionId);
+        console.log('Pushing to history:', {
+          questionId: this.questions[this.currentQuestionIndex].id,
+          answer: selectedChoice?.choice || this.freeResponseInput,
+          nextQuestionId,
+        });
+
+        // Move to next question
+        this.answerQuestion(
+          selectedChoice?.choice || this.freeResponseInput,
+          nextQuestionId
+        );
       } else {
-        console.error('No valid next question found, cannot proceed!');
+        console.error('No next question ID provided, cannot proceed!');
       }
     } else {
       console.error('No valid selection found, unable to proceed!');
@@ -355,44 +429,85 @@ export class QuestionnaireComponent implements OnInit {
     nextQuestionId: number | null
   ): void {
     if (nextQuestionId === null) {
+      console.error('Next question ID is null. Stopping progression.');
       return;
     }
+
+    console.log(
+      'Answer submitted:',
+      answer,
+      'Next question ID:',
+      nextQuestionId
+    );
 
     const nextQuestionIndex = this.questions.findIndex(
       (q) => q.id === nextQuestionId
     );
 
     if (nextQuestionIndex === -1) {
+      console.error(
+        'Next question not found in the questions array:',
+        nextQuestionId
+      );
       return;
     }
 
+    console.log('Moving to next question at index:', nextQuestionIndex);
     this.currentQuestionIndex = nextQuestionIndex;
   }
 
   handleBack() {
+    console.log('handleBack() triggered');
+
     if (this.history.length > 0) {
       const lastEntry = this.history.pop();
+      console.log('Popped last entry from history:', lastEntry);
+
+      // Set the current question to the last question in the history
       this.currentQuestionIndex = this.questions.findIndex(
         (q) => q.id === lastEntry?.questionId
       );
 
+      console.log('Restored Question ID:', lastEntry?.questionId);
+      console.log(
+        'Current Question Index after going back:',
+        this.currentQuestionIndex
+      );
+
       if (lastEntry) {
         const storedAnswer = lastEntry.answer;
+        console.log('Restoring stored answer:', storedAnswer);
 
+        // Check if storedAnswer is defined
         if (storedAnswer !== undefined && storedAnswer !== null) {
-          this.responses[this.currentQuestionIndex] = storedAnswer;
-
+          // Restore radio button selection (if the current question is a radio button question)
           if (
             this.questions[this.currentQuestionIndex]?.format ===
             'multiple_choice'
           ) {
             this.selectedRadioChoicesMap[this.currentQuestionIndex] =
               storedAnswer as string;
-          } else if (
+            console.log(
+              'Restoring Radio Button Answer:',
+              this.selectedRadioChoicesMap[this.currentQuestionIndex]
+            );
+          }
+
+          // Restore dropdown selection (if the current question is a dropdown)
+          if (
             this.questions[this.currentQuestionIndex]?.format === 'dropdown'
           ) {
-            this.selectedDropdownChoice = storedAnswer as string;
-          } else if (
+            this.selectedChoicesMap[this.currentQuestionIndex] = [
+              storedAnswer as string,
+            ];
+            console.log(
+              'Restoring Dropdown Answer:',
+              this.selectedChoicesMap[this.currentQuestionIndex]
+            );
+          }
+
+          // Restore checkbox selections (if the current question is a checkbox question)
+          if (
             this.questions[this.currentQuestionIndex]?.format === 'checkbox'
           ) {
             this.selectedChoicesMap[this.currentQuestionIndex] = Array.isArray(
@@ -400,19 +515,29 @@ export class QuestionnaireComponent implements OnInit {
             )
               ? storedAnswer
               : [storedAnswer];
-          } else if (
+            console.log(
+              'Restoring Checkbox Answers:',
+              this.selectedChoicesMap[this.currentQuestionIndex]
+            );
+          }
+
+          // Restore free response (if the current question is a free response)
+          if (
             this.questions[this.currentQuestionIndex]?.format ===
             'free_response'
           ) {
             this.freeResponseInput = storedAnswer as string;
+            console.log('Restoring Free Response:', this.freeResponseInput);
           }
+        } else {
+          console.log(
+            'Stored answer is undefined or null for question:',
+            lastEntry?.questionId
+          );
         }
       }
-
-      // Remove invalid history entries that no longer make sense
-      this.history = this.history.filter((entry) =>
-        Object.values(this.responses).includes(entry.answer)
-      );
+    } else {
+      console.log('No history available, cannot go back!');
     }
   }
 
@@ -471,19 +596,23 @@ export class QuestionnaireComponent implements OnInit {
   }
 
   getProgressPercentage(): number {
+    // Calculate base progress as a percentage based on current question index
     let percentage = (this.currentQuestionIndex / this.questions.length) * 100;
 
+    // If it's the last question (free response), check if a response is filled
     if (
       this.currentQuestionIndex === this.questions.length - 1 &&
       this.questions[this.currentQuestionIndex].format === 'free_response' &&
       this.freeResponseInput.trim() === ''
     ) {
+      // If the last question is a free response and it's empty, set progress below 100%
       percentage = (this.currentQuestionIndex / this.questions.length) * 100;
     } else if (
       this.currentQuestionIndex === this.questions.length - 1 &&
       this.questions[this.currentQuestionIndex].format === 'free_response' &&
       this.freeResponseInput.trim() !== ''
     ) {
+      // If it's the last question and there is an answer, set the progress to 100%
       percentage = 100;
     }
 
@@ -491,47 +620,53 @@ export class QuestionnaireComponent implements OnInit {
   }
 
   onSubmit() {
-    const userId = this.authService.getUserId();
+    const userId = this.authService.getUserId(); // Retrieve the logged-in user's ID
 
     if (userId === null) {
+      console.error('User ID is missing. Cannot submit questionnaire.');
       return;
     }
 
+    // Ensure question IDs match the actual DB IDs and only send answer values
     const answers = this.questions
       .map((question, index) => {
         let response = this.responses[index];
 
         if (Array.isArray(response)) {
+          // Convert array to string (comma-separated values)
           response = response.length > 0 ? response.join(', ') : '';
         } else if (response && typeof response === 'object') {
+          // If response is an object, extract the actual 'answer' field
           if (response.hasOwnProperty('answer')) {
-            response = response['answer'];
+            response = response['answer']; // Extract only the 'answer' field
           } else {
-            response = '';
+            response = ''; // If it's an unexpected object, default to empty string
           }
         } else if (response !== undefined && response !== null) {
+          // Ensure non-array and non-object values are strings
           response = String(response).trim();
         } else {
-          response = '';
+          response = ''; // Default to empty string
         }
 
         return {
-          question_id: question.id,
-          answer: response,
+          question_id: question.id, // Use actual DB ID
+          answer: response, // Ensure string format
         };
       })
-      .filter((answer) => answer.answer !== '');
+      .filter((answer) => answer.answer !== ''); // Remove empty responses
 
+    // Structure free responses separately
     const free_responses = this.freeResponseInput
       ? [
           {
-            question_id: this.questions[this.questions.length - 1].id,
+            question_id: this.questions[this.questions.length - 1].id, // Ensure correct ID
             response: this.freeResponseInput.trim() || '',
           },
         ]
       : [];
 
-    // Debugging message
+    // Debugging
     console.log('Submitting questionnaire:', {
       user_id: userId,
       answers,
@@ -544,7 +679,11 @@ export class QuestionnaireComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Questionnaire submitted successfully:', response);
+
+          // Set progress to 100%
           this.currentQuestionIndex = this.questions.length;
+
+          // Redirect to pet listing page
           this.router.navigate(['/pet-listing']);
         },
         error: (err) => {
@@ -554,38 +693,44 @@ export class QuestionnaireComponent implements OnInit {
   }
 
   saveProgress(): void {
-    const userId = this.authService.getUserId();
+    const userId = this.authService.getUserId(); // Retrieve the logged-in user's ID
 
     if (userId === null) {
       console.error('User ID is missing. Cannot save progress.');
       return;
     }
 
+    // Ensure question IDs match the actual DB IDs
     const answers = this.questions
       .map((question, index) => {
         let response = this.responses[index];
 
         if (Array.isArray(response)) {
+          // Convert array to string, separating items with commas
           response = response.length > 0 ? response.join(', ') : '';
         } else if (response && typeof response === 'object') {
+          // If the response is an object, extract the actual 'answer' value
           if (response.hasOwnProperty('answer')) {
-            response = response['answer'];
+            response = response['answer']; // Extract only the 'answer' field
           } else {
+            // Handle case where response is an unexpected object format
             response = '';
           }
         } else if (response !== undefined && response !== null) {
+          // Ensure non-array and non-object values are strings
           response = String(response).trim();
         } else {
-          response = '';
+          response = ''; // Default to empty string
         }
 
         return {
-          question_id: question.id,
-          answer: response,
+          question_id: question.id, // Use actual DB ID
+          answer: response, // Ensure string format
         };
       })
-      .filter((answer) => answer.answer !== '');
+      .filter((answer) => answer.answer !== ''); // Remove empty responses
 
+    // Ensure answers array isn't empty and fetch the last question ID
     const lastQuestionId =
       answers.length > 0 ? answers[answers.length - 1].question_id : null;
 
@@ -594,17 +739,18 @@ export class QuestionnaireComponent implements OnInit {
       return;
     }
 
+    // Structure free responses separately
     const free_responses =
       this.freeResponseInput && this.freeResponseInput.trim()
         ? [
             {
-              question_id: this.questions[this.questions.length - 1].id,
+              question_id: this.questions[this.questions.length - 1].id, // Ensure correct last question ID
               response: this.freeResponseInput.trim(),
             },
           ]
         : [];
 
-    // Debugging message
+    // Debugging
     console.log('Saving progress:', {
       user_id: userId,
       lastQuestionId,
@@ -612,11 +758,13 @@ export class QuestionnaireComponent implements OnInit {
       free_responses,
     });
 
+    // Pass the lastQuestionId to the service, ensure it's not null
     this.questionnaireService
-      .saveProgress(userId, lastQuestionId ?? -1, answers, free_responses)
+      .saveProgress(userId, lastQuestionId ?? -1, answers, free_responses) // Fallback to -1 if lastQuestionId is null
       .subscribe({
         next: (response) => {
           console.log('Progress saved successfully:', response);
+          // Redirect to pet-listing page after successful save
           this.router.navigate(['/pet-listing']);
         },
         error: (err) => {
@@ -627,9 +775,9 @@ export class QuestionnaireComponent implements OnInit {
 
   openModal() {
     if (this.profileComplete) {
-      this.router.navigate(['/pet-listing']);
+      this.router.navigate(['/pet-listing']); // Redirects user immediately if profile is complete
     } else {
-      this.isModalVisible = true;
+      this.isModalVisible = true; // Shows the modal if the questionnaire isn't complete
     }
   }
 
