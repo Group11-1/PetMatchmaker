@@ -82,7 +82,6 @@ export class AuthService {
   //Clears token only
   clearToken() {
     localStorage.removeItem('jwt_token');
-    localStorage.removeItem('jwt_token');
   }
 
   // Clear token on logout
