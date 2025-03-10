@@ -104,7 +104,6 @@ app.post("/api/login", (req, res) => {
           expiresIn: "1h",
         }
       );
-
       // Return profile_completed status along with other details
       res.json({
         token,
