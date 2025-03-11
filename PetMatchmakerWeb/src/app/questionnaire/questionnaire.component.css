@@ -349,7 +349,7 @@ h2 {
 }
 
 .modal-img {
-  width: 300px; /* Adjust the size of the image */
+  width: 250px; /* Adjust the size of the image */
   margin: 0 auto 10px; /* Centers the image and adds space below */
 }
 
@@ -359,7 +359,6 @@ h2 {
   justify-content: center;
   align-items: center;
   text-align: center;
-  margin-bottom: 10px;
 }
 
 .modal-content {

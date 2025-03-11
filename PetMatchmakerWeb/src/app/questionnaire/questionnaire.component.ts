@@ -47,6 +47,8 @@ export class QuestionnaireComponent implements OnInit {
 
   profileComplete: boolean = false;
 
+  responsesHistory: { [key: number]: string } = {};
+
   constructor(
     private authService: AuthService,
     private http: HttpClient,
@@ -702,8 +704,16 @@ export class QuestionnaireComponent implements OnInit {
 
     // Ensure question IDs match the actual DB IDs
     const answers = this.questions
-      .map((question, index) => {
-        let response = this.responses[index];
+      .map((question, question_id) => {
+        // Only process questions that come after the last answered question
+        if (
+          this.lastQuestionId !== null &&
+          question.id <= this.lastQuestionId
+        ) {
+          return null; // Skip already answered questions
+        }
+
+        let response = this.responses[question_id];
 
         if (Array.isArray(response)) {
           // Convert array to string, separating items with commas
@@ -728,11 +738,13 @@ export class QuestionnaireComponent implements OnInit {
           answer: response, // Ensure string format
         };
       })
-      .filter((answer) => answer.answer !== ''); // Remove empty responses
+      .filter((answer) => answer !== null && answer.answer !== ''); // Remove skipped/empty responses
 
     // Ensure answers array isn't empty and fetch the last question ID
     const lastQuestionId =
-      answers.length > 0 ? answers[answers.length - 1].question_id : null;
+      answers && Array.isArray(answers) && answers.length > 0
+        ? answers[answers.length - 1]?.question_id
+        : null;
 
     if (lastQuestionId === null) {
       console.error('No last question ID found. Cannot save progress.');
