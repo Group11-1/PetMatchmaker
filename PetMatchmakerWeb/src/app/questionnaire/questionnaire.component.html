@@ -1,7 +1,12 @@
 <div [ngClass]="getSectionHeader().bgColor">
   <!-- Exit Logo Section -->
   <div class="exit-logo">
-    <button (click)="openModal()">Exit Questionnaire</button>
+    <button
+      *ngIf="currentQuestionIndex !== questions.length - 1 || profileComplete"
+      (click)="openModal()"
+    >
+      Exit Questionnaire
+    </button>
     <img
       class="logo"
       src="assets/img/Website Icon.png"
@@ -14,6 +19,7 @@
     {{ getSectionHeader().title }}
     <span>{{ getSectionHeader().icon }}</span>
   </h1>
+
   <div
     *ngIf="!loading && questions.length > 0; else loadingTemplate"
     class="questionnaire-wrapper"
