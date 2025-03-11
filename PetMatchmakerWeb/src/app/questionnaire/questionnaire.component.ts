@@ -629,20 +629,29 @@ export class QuestionnaireComponent implements OnInit {
       return;
     }
 
-    // Ensure question IDs match the actual DB IDs and only send answer values
+    // Ensure question IDs match the actual DB IDs
     const answers = this.questions
-      .map((question, index) => {
-        let response = this.responses[index];
+      .map((question, question_id) => {
+        // Only process questions that come after the last answered question
+        if (
+          this.lastQuestionId !== null &&
+          question.id <= this.lastQuestionId
+        ) {
+          return null; // Skip already answered questions
+        }
+
+        let response = this.responses[question_id];
 
         if (Array.isArray(response)) {
-          // Convert array to string (comma-separated values)
+          // Convert array to string, separating items with commas
           response = response.length > 0 ? response.join(', ') : '';
         } else if (response && typeof response === 'object') {
-          // If response is an object, extract the actual 'answer' field
+          // If the response is an object, extract the actual 'answer' value
           if (response.hasOwnProperty('answer')) {
             response = response['answer']; // Extract only the 'answer' field
           } else {
-            response = ''; // If it's an unexpected object, default to empty string
+            // Handle case where response is an unexpected object format
+            response = '';
           }
         } else if (response !== undefined && response !== null) {
           // Ensure non-array and non-object values are strings
@@ -656,17 +665,18 @@ export class QuestionnaireComponent implements OnInit {
           answer: response, // Ensure string format
         };
       })
-      .filter((answer) => answer.answer !== ''); // Remove empty responses
+      .filter((answer) => answer !== null && answer.answer !== ''); // Remove skipped/empty responses
 
     // Structure free responses separately
-    const free_responses = this.freeResponseInput
-      ? [
-          {
-            question_id: this.questions[this.questions.length - 1].id, // Ensure correct ID
-            response: this.freeResponseInput.trim() || '',
-          },
-        ]
-      : [];
+    const free_responses =
+      this.freeResponseInput && this.freeResponseInput.trim()
+        ? [
+            {
+              question_id: this.questions[this.questions.length - 1].id, // Ensure correct last question ID
+              response: this.freeResponseInput.trim(),
+            },
+          ]
+        : [];
 
     // Debugging
     console.log('Submitting questionnaire:', {

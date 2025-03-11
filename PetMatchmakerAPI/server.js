@@ -1,10 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const { db, knexDB } = require("./db");
-const { db, knexDB } = require("./db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { format } = require("mysql2");
 const { format } = require("mysql2");
 const app = express();
 const port = 3000;
