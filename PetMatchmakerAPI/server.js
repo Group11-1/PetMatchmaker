@@ -109,13 +109,6 @@ app.post("/api/login", (req, res) => {
         role: user.role_id,
         profile_completed: user.profile_completed, // Send profile completion status
       });
-      // Return profile_completed status along with other details
-      res.json({
-        token,
-        isAdmin,
-        role: user.role_id,
-        profile_completed: user.profile_completed, // Send profile completion status
-      });
     }
   );
 });
