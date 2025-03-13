@@ -137,12 +137,12 @@ function displayPets(pets: Pet[]): void {
         }
 
         petDiv.innerHTML = `
+            <button class="favorite-button"><i class="far fa-heart"></i></button>
             <img src="${petImage}" alt="${pet.name}">
             <h3>${pet.name}</h3>
             <p><strong>Breed:</strong> ${pet.breeds.primary || "Unknown"}</p>
             <p><strong>Age:</strong> ${pet.age}</p>
             <p><strong>Size:</strong> ${pet.size}</p>
-             <button class="favorite-button"><i class="far fa-heart"></i></button>
         `;
 
         container?.appendChild(petDiv);

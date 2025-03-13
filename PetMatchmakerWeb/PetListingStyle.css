@@ -29,6 +29,29 @@ nav ul {
   margin-left: 20px;
 }
 
+/* style for filter button */
+.filter-button {
+  background-color: #f8ffba; 
+  color: black; 
+  border: 1px solid; 
+  font-family: 'Modak', sans-serif;
+  font-size: 18px;
+  font-weight: 200;
+  padding: 15px 25px; 
+  border-radius: 50%; /* roundness */
+  cursor: pointer; /* Change cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition */
+  margin-left: 25px;
+  height: 10px;
+  width: 130px;
+  text-align:center;
+  line-height: 10px;
+  
+}
+
+.filter-button:hover {
+  background-color: #8cbaff; /* Darker shade on hover */
+}
 /* Style for the search bar */
 .search-container {
   margin-left: 1450px;
@@ -87,7 +110,7 @@ nav ul {
 
 .modak-regular {
     font-family: "Modak", system-ui;
-    font-weight: 400;
+    font-weight: 300;
     font-style: normal;
   }
 
@@ -105,9 +128,11 @@ nav ul {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 columns per row */
   grid-template-rows: repeat(2, auto); /* 2 rows, auto height */
-  gap: 200px; /* Space between grid items */
+  column-gap: 200px;
+  row-gap: 50px;
   padding: 20px;
   justify-content: center;
+  font-weight: 100;
   max-width: 900px; 
   margin: auto; /* Centers the grid */
 }
@@ -115,6 +140,7 @@ nav ul {
 .pet-listing {
   position: relative;
   text-align: center;
+  
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 10px;
