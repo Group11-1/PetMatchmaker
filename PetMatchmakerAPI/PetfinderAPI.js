@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 
-const client_ID = "SpVPhvPRJKYA7CcFQVZYjyKLMAcKeMkJRIpTsBX66izcpBVCDj"; // Replace with actual ID
-const client_secret = "WXaCjTAqEdnZw3yTBVJaAxAcdUBI9wdkcqefGLOZ";
+const client_ID = "SpVPhvPRJKYA7CcFQVZYjyKLMAcKeMkJRIpTsBX66izcpBVCDj"; //our personal ID
+const client_secret = "WXaCjTAqEdnZw3yTBVJaAxAcdUBI9wdkcqefGLOZ"; //our personal key
 
 let accessToken = null;
 let tokenExpiration = null;
