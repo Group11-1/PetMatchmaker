@@ -1,1 +1,100 @@
-<p>pet-listing works!</p>
+<p>pet-lisiting works!</p>
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+    <!--linked styles, fonts, icons-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Listing Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
+ </head>
+ 
+<body>
+    <header>
+        
+        <h1></h1>
+        <nav>
+            
+            <div >
+                <ul>
+                    <!--deleted header-->
+                </ul>
+                </div>
+            
+        </nav>
+
+    </header>
+    <div class="message">Adoptable Friends Await!</div>
+    <div class="search-container">
+        
+        <input type="text" placeholder="Search by Pet Name...">
+        <button type="submit">
+            <i class="fas fa-search"></i> <!-- Search Icon -->
+        </button>
+    </div>
+    <!--data from api -->
+    <div id="data-container"></div> <!-- This is where the data will be displayed -->
+    <script src="pet-listing.component.ts"></script> <!-- changed to angular component ts file-->
+   
+    <div class="pet-listings"> <!--added new method for pets to be shown-->
+        <h2>Showing Results</h2>
+        
+        <div *ngFor="let pet of pets" class="pet-listing">
+            <button class="favorite-button">
+                <i class="far fa-heart"></i>
+            </button>
+            <img [src]="pet.image" [alt]="pet.name">
+            <h3>{{ pet.name }}</h3>
+            <p><strong>Breed:</strong> {{ pet.breed }}</p>
+            <p><strong>Age:</strong> {{ pet.age }}</p>
+            <p><strong>Size:</strong> {{ pet.size }}</p>
+        </div>
+    </div>
+
+    <main>
+        <aside class="filter-panel">
+            <button class="filter-button">Filter</button>
+            <div class="filter-categories" style="display: none;"> 
+                <h2>Filter by:</h2>
+                <div class="filter-group">
+                    <h3>Animal</h3>
+                    <input type="checkbox" id="dog"> <label for="dog">Dog</label>
+                    <input type="checkbox" id="cat"> <label for="cat">Cat</label>
+                    <input type="checkbox" id="rodent"> <label for="rodent">Rodent</label>   
+                </div>
+                <div class="filter-group">
+                    <h3>Gender</h3>
+                    <input type="checkbox" id="male"> <label for="male">Male</label>
+                    <input type="checkbox" id="female"> <label for="female">Female</label>
+                </div>
+                <div class="filter-group">
+                    <h3>Age</h3>
+                    <input type="checkbox" id="puppy"> <label for="puppy">Puppy</label>
+                    <input type="checkbox" id="adult"> <label for="adult">Adult</label>
+                    <input type="checkbox" id="senior"> <label for="senior">Senior</label>
+                </div>
+                <div class="filter-group">
+                    <h3>Size</h3>
+                    <input type="checkbox" id="small"> <label for="small">Small</label>
+                    <input type="checkbox" id="medium"> <label for="medium">Medium</label>
+                    <input type="checkbox" id="large"> <label for="large">Large</label>
+                </div>
+                <button class="apply-button">Apply</button>
+                <button class="reset-button">Reset</button>
+            </div>
+        </aside>
+
+    </main>
+
+    <footer>
+        <!--deleted footer-->
+    </footer>
+
+    <script src="PetListing.js"></script>
+</body>
+</html>
