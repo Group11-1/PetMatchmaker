@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { Pet } from '../models/pet';
 @Injectable({
   providedIn: 'root',
 })
@@ -10,7 +10,7 @@ export class PetService {
 
   constructor(private http: HttpClient) {}
 
-  getPets(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/pets`);
+  getPets(): Observable<Pet[]> {
+    return this.http.get<Pet[]>(`${this.apiUrl}/pets`);
   }
 }
