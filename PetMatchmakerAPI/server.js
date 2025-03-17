@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const { format } = require("mysql2");
 const app = express();
 const port = 3000;
+const petfinderAPI = require("./PetfinderAPI");
 
 app.use(express.json());
 app.use(cors());
@@ -424,6 +425,15 @@ app.get("/api/questionnaire/progress/:userId", (req, res) => {
       );
     }
   );
+});
+
+app.get("/api/pets", async (req, res) => {
+  try {
+    const data = await petfinderAPI.getAvailablePets();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch pets" });
+  }
 });
 
 app.listen(port, () => {
