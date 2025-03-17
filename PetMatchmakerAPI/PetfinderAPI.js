@@ -23,7 +23,7 @@ async function getAccessToken() {
 
     if (response.ok) {
       accessToken = data.access_token;
-      tokenExpiration = Date.now() + data.expires_in * 1000; // Store expiration time
+      tokenExpiration = Date.now() + data.expires_in * 1000;
       return accessToken;
     } else {
       throw new Error("Failed to get access token");
