@@ -30,9 +30,9 @@ export interface Address {
 export interface Pet {
   id: number;
   name: string;
-  breed: Breed;
-  photos: Photo[];
-  primary_photo_cropped: string | null;
+  breeds: Breed;
+  photos?: Photo[];
+  primary_photo_cropped?: Photo;
   url: string;
   age: string;
   gender: string;
