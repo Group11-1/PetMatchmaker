@@ -35,13 +35,16 @@ async function getAccessToken() {
 }
 
 // Fetch available pets
-async function getAvailablePets() {
+async function getAvailablePets(page = 1) {
   try {
     const token = await getAccessToken();
-    const response = await fetch("https://api.petfinder.com/v2/animals", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `https://api.petfinder.com/v2/animals?page=${page}`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
     return await response.json();
   } catch (error) {

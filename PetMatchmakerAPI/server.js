@@ -429,8 +429,24 @@ app.get("/api/questionnaire/progress/:userId", (req, res) => {
 
 app.get("/api/pets", async (req, res) => {
   try {
-    const data = await petfinderAPI.getAvailablePets();
-    res.json(data);
+    const page = req.query.page || 1; // Default to page 1 if not provided
+    const data = await petfinderAPI.getAvailablePets(page);
+
+    res.json({
+      animals: data.animals,
+      pagination: {
+        current_page: data.pagination.current_page,
+        total_pages: data.pagination.total_pages,
+        next_page:
+          data.pagination.current_page < data.pagination.total_pages
+            ? `/api/pets?page=${data.pagination.current_page + 1}`
+            : null,
+        prev_page:
+          data.pagination.current_page > 1
+            ? `/api/pets?page=${data.pagination.current_page - 1}`
+            : null,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch pets" });
   }

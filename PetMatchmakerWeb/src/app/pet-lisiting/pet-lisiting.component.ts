@@ -35,9 +35,9 @@ export class PetLisitingComponent implements OnInit {
     }
   }
 
-  loadPets(): void {
+  loadPets(page: number = 1): void {
     this.loading = true; // Set loading to true when the API request starts
-    this.petService.getPets().subscribe(
+    this.petService.getPets(page).subscribe(
       (response: any) => {
         console.log('API Response:', response);
         this.pets = response.animals || [];
@@ -89,17 +89,15 @@ export class PetLisitingComponent implements OnInit {
     return '/assets/img/Website Icon.png';
   }
 
-  nextPage() {
+  nextPage(): void {
     if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.loadPets(); // Load data for the next page
+      this.loadPets(this.currentPage + 1);
     }
   }
 
-  prevPage() {
+  prevPage(): void {
     if (this.currentPage > 1) {
-      this.currentPage--;
-      this.loadPets(); // Load data for the previous page
+      this.loadPets(this.currentPage - 1);
     }
   }
 

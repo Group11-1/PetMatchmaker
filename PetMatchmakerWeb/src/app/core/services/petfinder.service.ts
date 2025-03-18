@@ -10,7 +10,7 @@ export class PetService {
 
   constructor(private http: HttpClient) {}
 
-  getPets(): Observable<Pet[]> {
-    return this.http.get<Pet[]>(`${this.apiUrl}/pets`);
+  getPets(page: number = 1): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/pets?page=${page}`);
   }
 }
