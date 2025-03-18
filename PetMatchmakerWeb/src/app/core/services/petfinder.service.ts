@@ -20,4 +20,8 @@ export class PetService {
       `${this.apiUrl}/searchPets?name=${name}&page=${page}`
     );
   }
+
+  getBreedsByType(animalType: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/breeds/${animalType}`);
+  }
 }

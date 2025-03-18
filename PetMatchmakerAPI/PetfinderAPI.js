@@ -76,11 +76,36 @@ async function getSearchedPets(searchQuery = "", page = 1) {
   }
 }
 
+// Fetch breeds by animal type
+async function getBreedsByType(animalType) {
+  try {
+    const token = await getAccessToken();
+    const response = await fetch(
+      `https://api.petfinder.com/v2/types/${animalType}/breeds`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch breeds for type: ${animalType}`);
+    }
+
+    const data = await response.json();
+    return data.breeds;
+  } catch (error) {
+    console.error("Error fetching breeds:", error);
+    throw error;
+  }
+}
+
 // Export all functions as a single object
 const petfinderAPI = {
   getAccessToken,
   getAvailablePets,
   getSearchedPets,
+  getBreedsByType,
 };
 
 module.exports = petfinderAPI;

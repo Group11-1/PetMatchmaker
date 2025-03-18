@@ -464,6 +464,19 @@ app.get("/api/searchPets", async (req, res) => {
   }
 });
 
+// Endpoint to get breeds for a specific animal type
+app.get("/api/breeds/:type", async (req, res) => {
+  try {
+    const animalType = req.params.type; // Get animal type (dog, cat, etc.)
+    const breeds = await petfinderAPI.getBreedsByType(animalType); // Call the function that fetches breeds from Petfinder
+
+    res.json({ breeds }); // Send the breeds back to the frontend
+  } catch (error) {
+    console.error("Error fetching breeds:", error);
+    res.status(500).json({ error: "Failed to fetch breeds" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

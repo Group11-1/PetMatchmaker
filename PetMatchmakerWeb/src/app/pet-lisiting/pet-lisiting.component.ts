@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { PetService } from '../core/services/petfinder.service';
 import { Pet } from '../core/models/pet';
+import { Breed } from '../core/models/pet';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilter, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -49,6 +50,28 @@ export class PetLisitingComponent implements OnInit {
   searchedPets: any[] = [];
   searchQuery: string = '';
   searchQuerySubject = new Subject<string>();
+
+  animalTypes: string[] = ['Dog', 'Cat'];
+  selectedAnimalTypes: string[] = [];
+  breeds: string[] = [];
+  selectedBreed: string = '';
+
+  // Predefined values for the filters
+  sizes: string[] = ['Small', 'Medium', 'Large', 'X-Large'];
+  ages: string[] = ['Baby', 'Young', 'Adult', 'Senior'];
+  genders: string[] = ['Male', 'Female'];
+
+  // Selected filter values
+  selectedSize: string = '';
+  selectedAge: string = '';
+  selectedGender: string[] = [];
+
+  // Selected animals
+  selectedAnimals: string[] = [];
+
+  filteredPets: Pet[] = [];
+
+  hasClickedBreed: boolean = false;
 
   @ViewChild('drawer') drawer!: MatDrawer;
 
@@ -223,5 +246,97 @@ export class PetLisitingComponent implements OnInit {
 
   onSearch(): void {
     this.searchQuerySubject.next(this.searchQuery);
+  }
+
+  // Fetch breeds based on animal type from the PetService
+  fetchBreeds(animal: string) {
+    this.petService.getBreedsByType(animal).subscribe(
+      (response) => {
+        // Update the breeds array with the fetched breed names
+        this.breeds = response.breeds.map(
+          (breed: { name: string }) => breed.name
+        );
+      },
+      (error) => {
+        console.error('Error fetching breeds:', error);
+      }
+    );
+  }
+
+  // Handle changes to selected animal types
+  onAnimalTypeChange(event: any) {
+    const animal = event.target.value;
+    if (event.target.checked) {
+      this.selectedAnimalTypes.push(animal);
+      this.fetchBreeds(animal);
+    } else {
+      this.selectedAnimalTypes = this.selectedAnimalTypes.filter(
+        (a) => a !== animal
+      );
+
+      if (this.selectedAnimalTypes.length === 0) {
+        this.breeds = [];
+      }
+    }
+  }
+
+  onGenderChange(event: any) {
+    const gender = event.target.value;
+    if (event.target.checked) {
+      this.selectedGender.push(gender);
+    } else {
+      this.selectedGender = this.selectedGender.filter((g) => g !== gender);
+    }
+  }
+
+  filterPets() {
+    this.filteredPets = this.pets.filter((pet) => {
+      // Filter by Animal Type
+      const animalTypeMatch =
+        this.selectedAnimalTypes.length === 0 ||
+        this.selectedAnimalTypes.includes(pet.type);
+
+      // Filter by Breed
+      const breedMatch =
+        !this.selectedBreed || pet.breeds.primary === this.selectedBreed;
+
+      // Filter by Size
+      const sizeMatch = !this.selectedSize || pet.size === this.selectedSize;
+
+      // Filter by Age
+      const ageMatch = !this.selectedAge || pet.age === this.selectedAge;
+
+      // Filter by Gender
+      const genderMatch =
+        this.selectedGender.length === 0 ||
+        this.selectedGender.includes(pet.gender);
+
+      // Return true if all selected filters match the pet
+      return (
+        animalTypeMatch && breedMatch && sizeMatch && ageMatch && genderMatch
+      );
+    });
+  }
+
+  // Call this method whenever a filter is changed
+  onFilterChange() {
+    this.filterPets();
+  }
+
+  resetFilters() {
+    // Reset selected filters
+    this.selectedAnimalTypes = [];
+    this.selectedBreed = '';
+    this.selectedSize = '';
+    this.selectedAge = '';
+    this.selectedGender = [];
+
+    this.searchQuery = '';
+
+    this.filterPets();
+  }
+
+  onBreedDropdownClick() {
+    this.hasClickedBreed = true;
   }
 }

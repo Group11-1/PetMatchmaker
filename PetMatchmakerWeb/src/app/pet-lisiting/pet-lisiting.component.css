@@ -37,7 +37,7 @@ body.no-scroll {
 
 .example-sidenav {
   margin-top: 60px;
-  width: 250px;
+  width: 500px;
   background-color: white;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
   position: fixed;
@@ -249,4 +249,129 @@ h1 {
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+
+mat-nav-list {
+  font-family: "Luckiest Guy", sans-serif;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+/* Centering the Filters header */
+mat-nav-list h3 {
+  text-align: center;
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 20px;
+  margin-bottom: 20px; /* Optional: Adjust spacing as needed */
+}
+
+/* Section Title (e.g., Animal Type, Gender, etc.) */
+.section-title {
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 18px;
+  margin-top: 20px; /* Adds space above section titles */
+  margin-bottom: 10px; /* Adds space below section titles */
+}
+
+/* Checkbox Group - Side by Side */
+.checkbox-group {
+  display: flex;
+  flex-direction: row; /* Change from column to row for side-by-side */
+  gap: 10px; /* Adds space between checkboxes */
+  flex-wrap: wrap; /* Allows wrapping if there are too many checkboxes */
+  margin-bottom: 20px; /* Adds space below checkbox section */
+}
+
+.checkbox-group div {
+  display: flex;
+  align-items: center; /* Ensures that checkboxes and labels are vertically centered */
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 5px; /* Adds space between checkbox and label */
+}
+
+.checkbox-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Label for Checkboxes - Apply Neucha font */
+.checkbox-item label {
+  font-family: "Neucha", sans-serif;
+  font-size: 16px;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  margin-bottom: 20px; /* Adds space below each dropdown section */
+}
+
+.dropdown-select {
+  padding: 8px;
+  width: 100%;
+  font-family: "Neucha", sans-serif;
+  font-size: 14px;
+}
+
+/* Button Styles */
+.apply-button,
+.reset-button {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s; /* Added transition for shadow */
+  margin-top: 20px; /* Adds space above the button */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a soft shadow */
+}
+
+/* Button Hover Styles */
+.apply-button:hover,
+.reset-button:hover {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow on hover */
+}
+
+.button-container {
+  display: flex;
+  gap: 10px; /* Adds space between the buttons */
+}
+
+.apply-button {
+  background-color: #d4f4d4;
+}
+
+.apply-button:hover {
+  background-color: #a2e1a2;
+}
+
+.reset-button {
+  background-color: #f3e2f8;
+}
+
+.reset-button:hover {
+  background-color: #dacbdf;
+}
+
+/* Label Styles for all labels in filter sections */
+label {
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 16px;
+  display: block; /* Ensures labels are displayed in their own lines */
+  margin-bottom: 5px; /* Adds space between label and input/select */
+}
+
+/* Ensuring consistency for the font family of options in dropdowns */
+option {
+  font-family: "Neucha", sans-serif;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  font-family: "Neucha", sans-serif;
 }

@@ -6,10 +6,78 @@
   <mat-drawer #drawer class="example-sidenav" mode="side" position="start">
     <mat-nav-list>
       <h3>Filters</h3>
-      <!-- You can add actual filter options here -->
-      <mat-list-item>Filter Option 1</mat-list-item>
-      <mat-list-item>Filter Option 2</mat-list-item>
-      <mat-list-item>Filter Option 3</mat-list-item>
+
+      <!-- Animal Selection - Checkboxes (Side by side) -->
+      <label class="section-title">Animal Type</label>
+      <div class="checkbox-group">
+        <div *ngFor="let animal of animalTypes" class="checkbox-item">
+          <input
+            type="checkbox"
+            [value]="animal"
+            (change)="onAnimalTypeChange($event)"
+            [checked]="selectedAnimalTypes.includes(animal)"
+          />
+          <label>{{ animal }}</label>
+        </div>
+      </div>
+
+      <!-- Breed Selection - Dropdown (Always visible) -->
+      <div class="dropdown">
+        <label>Breed Selection</label>
+        <select
+          [(ngModel)]="selectedBreed"
+          class="dropdown-select"
+          [disabled]="selectedAnimalTypes.length === 0"
+        >
+          <option *ngFor="let breed of breeds" [value]="breed">
+            {{ breed }}
+          </option>
+        </select>
+        <!-- Error message if no animal type is selected -->
+        <div *ngIf="selectedAnimalTypes.length === 0" class="error-message">
+          Please select an animal type before choosing a breed.
+        </div>
+      </div>
+
+      <!-- Gender Selection - Checkboxes (Side by side) -->
+      <label>Gender</label>
+      <div class="checkbox-group">
+        <div *ngFor="let gender of genders" class="checkbox-item">
+          <input
+            type="checkbox"
+            [value]="gender"
+            (change)="onGenderChange($event)"
+            [checked]="selectedGender.includes(gender)"
+          />
+          <label>{{ gender }}</label>
+        </div>
+      </div>
+
+      <!-- Size Selection - Dropdown -->
+      <div class="dropdown">
+        <label>Size</label>
+        <select [(ngModel)]="selectedSize" class="dropdown-select">
+          <option *ngFor="let size of sizes" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+
+      <!-- Age Selection - Dropdown -->
+      <div class="dropdown">
+        <label>Age</label>
+        <select [(ngModel)]="selectedAge" class="dropdown-select">
+          <option *ngFor="let age of ages" [value]="age">{{ age }}</option>
+        </select>
+      </div>
+
+      <!-- Filters Button -->
+      <div class="button-container">
+        <button class="apply-button" (click)="onFilterChange()">
+          Apply Filters
+        </button>
+        <button class="reset-button" (click)="resetFilters()">
+          Reset Filters
+        </button>
+      </div>
     </mat-nav-list>
   </mat-drawer>
 
@@ -44,8 +112,15 @@
 
     <!-- Pet List Grid -->
     <div *ngIf="!loading && !noPetsFound" class="pet-list">
+      <!-- Check if there is a search query, if not, fallback to filteredPets or pets -->
       <div
-        *ngFor="let pet of searchQuery ? searchedPets : pets"
+        *ngFor="
+          let pet of searchQuery
+            ? searchedPets
+            : filteredPets.length
+            ? filteredPets
+            : pets
+        "
         class="pet-card"
       >
         <a [href]="pet.url" target="_blank">
