@@ -1,4 +1,11 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  HostListener,
+  ViewChild,
+  Renderer2,
+  AfterViewInit,
+} from '@angular/core';
 import { PetService } from '../core/services/petfinder.service';
 import { Pet } from '../core/models/pet';
 import { CommonModule } from '@angular/common';
@@ -7,10 +14,24 @@ import { faFilter, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { NgModule } from '@angular/core';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-pet-lisiting',
-  imports: [CommonModule, FontAwesomeModule, FormsModule],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    FormsModule,
+    MatSidenavModule,
+    MatListModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDrawer,
+  ],
   templateUrl: './pet-lisiting.component.html',
   styleUrl: './pet-lisiting.component.css',
 })
@@ -28,7 +49,9 @@ export class PetLisitingComponent implements OnInit {
   searchQuery: string = '';
   searchQuerySubject = new Subject<string>();
 
-  constructor(private petService: PetService) {}
+  @ViewChild('drawer') drawer!: MatDrawer;
+
+  constructor(private petService: PetService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
     // Load pets when the component initializes
@@ -58,6 +81,25 @@ export class PetLisitingComponent implements OnInit {
           console.error('Error searching pets:', error);
         }
       );
+  }
+
+  ngAfterViewInit() {
+    // Watch for when the drawer is opened or closed
+    this.drawer.openedChange.subscribe((isOpened) => {
+      if (isOpened) {
+        // Disable scrolling on both html and body when the sidenav is open
+        this.renderer.setStyle(document.documentElement, 'overflow', 'hidden');
+        this.renderer.setStyle(document.body, 'overflow', 'hidden');
+        this.renderer.setStyle(document.body, 'position', 'fixed');
+        this.renderer.setStyle(document.body, 'width', '100%');
+      } else {
+        // Re-enable scrolling when the sidenav is closed
+        this.renderer.removeStyle(document.documentElement, 'overflow');
+        this.renderer.removeStyle(document.body, 'overflow');
+        this.renderer.removeStyle(document.body, 'position');
+        this.renderer.removeStyle(document.body, 'width');
+      }
+    });
   }
 
   loadPets(page: number = 1): void {

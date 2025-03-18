@@ -1,45 +1,64 @@
-<div class="pet-list-container">
-  <img src="/assets/img/Title Bar.png" class="title-bar" />
-  <h1>Adoptable Friends Await!</h1>
+<mat-drawer-container class="example-container">
+  <!-- Overlay background for the drawer -->
+  <div *ngIf="drawer.opened" class="overlay" (click)="drawer.toggle()"></div>
 
-  <!-- Filter and Search Section -->
-  <div class="filter-search-container">
-    <button class="filter-btn">
-      <fa-icon [icon]="faFilter"></fa-icon> Filter
-    </button>
-    <input
-      type="text"
-      [(ngModel)]="searchQuery"
-      (input)="onSearch()"
-      placeholder="Search..."
-      class="search-field"
-    />
-  </div>
+  <!-- Side Drawer (Drawer that slides from the left) -->
+  <mat-drawer #drawer class="example-sidenav" mode="side" position="start">
+    <mat-nav-list>
+      <h3>Filters</h3>
+      <!-- You can add actual filter options here -->
+      <mat-list-item>Filter Option 1</mat-list-item>
+      <mat-list-item>Filter Option 2</mat-list-item>
+      <mat-list-item>Filter Option 3</mat-list-item>
+    </mat-nav-list>
+  </mat-drawer>
 
-  <!-- Loading Spinner -->
-  <div *ngIf="loading" class="spinner-container">
-    <div class="spinner"></div>
-  </div>
+  <!-- Main Content Area -->
+  <div class="pet-list-container">
+    <img src="/assets/img/Title Bar.png" class="title-bar" />
+    <h1>Adoptable Friends Await!</h1>
 
-  <!-- Pet List Grid -->
-  <div *ngIf="!loading" class="pet-list">
-    <div *ngFor="let pet of searchedPets" class="pet-card">
-      <a [href]="pet.url" target="_blank">
-        <img [src]="getImageUrl(pet)" [alt]="pet.name" class="pet-image" />
-      </a>
-      <h3>{{ getPetName(pet) }}</h3>
-      <p>{{ pet.breeds.primary }}</p>
-      <button>Adopt Me</button>
-      <a [href]="pet.url" target="_blank">More Info</a>
+    <!-- Filter and Search Section -->
+    <div class="filter-search-container">
+      <button class="filter-btn" (click)="drawer.toggle()">
+        <fa-icon [icon]="faFilter"></fa-icon> Filter
+      </button>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (input)="onSearch()"
+        placeholder="Search..."
+        class="search-field"
+      />
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="spinner-container">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Pet List Grid -->
+    <div *ngIf="!loading" class="pet-list">
+      <div *ngFor="let pet of searchedPets" class="pet-card">
+        <a [href]="pet.url" target="_blank">
+          <img [src]="getImageUrl(pet)" [alt]="pet.name" class="pet-image" />
+        </a>
+        <h3>{{ getPetName(pet) }}</h3>
+        <p>{{ pet.breeds.primary }}</p>
+        <button>Adopt Me</button>
+        <a [href]="pet.url" target="_blank">More Info</a>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">
+        ← Back
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next →
+      </button>
     </div>
   </div>
-
-  <!-- Pagination Controls -->
-  <div class="pagination">
-    <button (click)="prevPage()" [disabled]="currentPage === 1">← Back</button>
-    <span>Page {{ currentPage }} of {{ totalPages }}</span>
-    <button (click)="nextPage()" [disabled]="currentPage === totalPages">
-      Next →
-    </button>
-  </div>
-</div>
+</mat-drawer-container>
