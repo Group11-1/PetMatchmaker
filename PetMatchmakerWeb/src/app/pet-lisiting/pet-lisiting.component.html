@@ -1,46 +1,48 @@
 <div class="pet-list-container">
-    <img src="/assets/img/Title Bar.png" class="title-bar" />
-    <h1>Adoptable Friends Await!</h1>
-  
-    <!-- Filter and Search Section -->
-    <div class="filter-search-container">
-      <button class="filter-btn">
-        <fa-icon [icon]="faFilter"></fa-icon> Filter
-      </button>
-      <input type="text" placeholder="Search..." class="search-field" />
-    </div>
-  
-    <!-- Loading Spinner -->
-    <div *ngIf="loading" class="spinner-container">
-      <div class="spinner"></div>
-    </div>
-  
-    <!-- Pet List Grid -->
-    <div *ngIf="!loading" class="pet-list">
-      <div *ngFor="let pet of pets" class="pet-card">
-        <a [href]="pet.url" target="_blank">
-          <img [src]="getImageUrl(pet)" [alt]="pet.name" class="pet-image" />
-        </a>
-        <h3>{{ getPetName(pet) }}</h3>
-        <p>{{ pet.breeds.primary }}</p>
-        <button>Adopt Me</button>
-        <!-- Instead of linking to an external URL, open the modal -->
-        <a (click)="openModal(pet)">More Info</a>
-      </div>
-    </div>
-  
-    <!-- Pagination Controls -->
-    <div class="pagination">
-      <button (click)="prevPage()" [disabled]="currentPage === 1">← Back</button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next →</button>
+  <img src="/assets/img/Title Bar.png" class="title-bar" />
+  <h1>Adoptable Friends Await!</h1>
+
+  <!-- Filter and Search Section -->
+  <div class="filter-search-container">
+    <button class="filter-btn">
+      <fa-icon [icon]="faFilter"></fa-icon> Filter
+    </button>
+    <input type="text" placeholder="Search..." class="search-field" />
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="spinner-container">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Pet List Grid -->
+  <div *ngIf="!loading" class="pet-list">
+    <div *ngFor="let pet of pets" class="pet-card">
+      <a [href]="pet.url" target="_blank">
+        <img [src]="getImageUrl(pet)" [alt]="pet.name" class="pet-image" />
+      </a>
+      <h3>{{ getPetName(pet) }}</h3>
+      <p>{{ pet.breeds.primary }}</p>
+      <button>Adopt Me</button>
+      <!-- Instead of linking to an external URL, open the modal -->
+      <a (click)="openModal(pet)">More Info</a>
     </div>
   </div>
-  
-  <!-- Pet Card Modal: Displayed when a pet is selected -->
-  <app-pet-card 
-    *ngIf="selectedPet" 
-    [pet]="selectedPet" 
-    (closeCard)="closeModal()">
-  </app-pet-card>
-  
+
+  <!-- Pagination Controls -->
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">← Back</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+      Next →
+    </button>
+  </div>
+</div>
+
+<!-- Pet Card Modal: Displayed when a pet is selected -->
+<app-pet-card
+  *ngIf="selectedPet"
+  [pet]="selectedPet"
+  (closeCard)="closeModal()"
+>
+</app-pet-card>

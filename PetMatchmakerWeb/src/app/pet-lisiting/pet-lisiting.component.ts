@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { PetfinderService } from '../core/services/petfinder.service';
+import { PetService } from '../core/services/petfinder.service';
 import { Pet } from '../core/models/pet';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -22,7 +22,7 @@ export class PetLisitingComponent implements OnInit {
   currentPage: number = 1;
   totalPages: number = 1;
 
-  constructor(private petService: PetfinderService) {}
+  constructor(private petService: PetService) {}
 
   ngOnInit(): void {
     this.loadPets();
@@ -97,7 +97,8 @@ export class PetLisitingComponent implements OnInit {
   lastScrollTop: number = 0;
   @HostListener('window:scroll', ['$event'])
   onScroll(event: any): void {
-    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    const currentScroll =
+      window.pageYOffset || document.documentElement.scrollTop;
     if (currentScroll > this.lastScrollTop) {
       document.querySelector('header')?.classList.add('hide');
     } else {
