@@ -53,10 +53,34 @@ async function getAvailablePets(page = 1) {
   }
 }
 
+// Fetch searched pets, with optional search query
+async function getSearchedPets(searchQuery = "") {
+  try {
+    const token = await getAccessToken();
+
+    // Construct URL with searchQuery if it's provided
+    let url = `https://api.petfinder.com/v2/animals`;
+    if (searchQuery) {
+      url += `?name=${encodeURIComponent(searchQuery)}`; // Add name search parameter
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching pets:", error);
+    throw error;
+  }
+}
+
 // Export all functions as a single object
 const petfinderAPI = {
   getAccessToken,
   getAvailablePets,
+  getSearchedPets,
 };
 
 module.exports = petfinderAPI;

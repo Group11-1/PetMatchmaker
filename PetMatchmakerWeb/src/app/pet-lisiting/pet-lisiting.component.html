@@ -7,7 +7,13 @@
     <button class="filter-btn">
       <fa-icon [icon]="faFilter"></fa-icon> Filter
     </button>
-    <input type="text" placeholder="Search..." class="search-field" />
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="onSearch()"
+      placeholder="Search..."
+      class="search-field"
+    />
   </div>
 
   <!-- Loading Spinner -->
@@ -17,7 +23,7 @@
 
   <!-- Pet List Grid -->
   <div *ngIf="!loading" class="pet-list">
-    <div *ngFor="let pet of pets" class="pet-card">
+    <div *ngFor="let pet of searchedPets" class="pet-card">
       <a [href]="pet.url" target="_blank">
         <img [src]="getImageUrl(pet)" [alt]="pet.name" class="pet-image" />
       </a>

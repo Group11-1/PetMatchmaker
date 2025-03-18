@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Pet } from '../models/pet';
 @Injectable({
@@ -12,5 +12,11 @@ export class PetService {
 
   getPets(page: number = 1): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/pets?page=${page}`);
+  }
+
+  // Method to search pets by name
+  searchPets(searchQuery: string): Observable<any> {
+    const params = new HttpParams().set('name', searchQuery);
+    return this.http.get<any>(`${this.apiUrl}/search-pets`, { params });
   }
 }

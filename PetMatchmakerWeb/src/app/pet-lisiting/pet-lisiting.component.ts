@@ -4,10 +4,13 @@ import { Pet } from '../core/models/pet';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilter, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-pet-lisiting',
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule, FormsModule],
   templateUrl: './pet-lisiting.component.html',
   styleUrl: './pet-lisiting.component.css',
 })
@@ -21,11 +24,17 @@ export class PetLisitingComponent implements OnInit {
   currentPage: number = 1;
   totalPages: number = 1;
 
+  searchedPets: any[] = [];
+  searchQuery: string = '';
+  searchQuerySubject = new Subject<string>();
+
   constructor(private petService: PetService) {}
 
   ngOnInit(): void {
+    // Load pets when the component initializes
     this.loadPets();
 
+    // Set up dynamic margin for pet list (header adjustment)
     const header = document.querySelector('header');
     const headerHeight = header ? (header as HTMLElement).offsetHeight : 0;
     const petList = document.querySelector('.pet-list');
@@ -33,21 +42,38 @@ export class PetLisitingComponent implements OnInit {
     if (petList) {
       (petList as HTMLElement).style.marginTop = `${headerHeight}px`;
     }
+
+    // Subscribe to search query changes and fetch pets dynamically
+    this.searchQuerySubject
+      .pipe(
+        debounceTime(300), // Wait for user to stop typing for 300ms
+        distinctUntilChanged(), // Only search if the query changes
+        switchMap((query) => this.petService.searchPets(query)) // Perform API call to search pets
+      )
+      .subscribe(
+        (response) => {
+          this.searchedPets = response.animals || []; // Update searchedPets with API response
+        },
+        (error) => {
+          console.error('Error searching pets:', error);
+        }
+      );
   }
 
   loadPets(page: number = 1): void {
-    this.loading = true; // Set loading to true when the API request starts
+    this.loading = true;
     this.petService.getPets(page).subscribe(
       (response: any) => {
         console.log('API Response:', response);
         this.pets = response.animals || [];
         this.currentPage = response.pagination.current_page || 1;
         this.totalPages = response.pagination.total_pages || 1;
-        this.loading = false; // Set loading to false once data is loaded
+        this.loading = false;
+        this.searchedPets = this.pets;
       },
       (error) => {
         console.error('Error fetching pets:', error);
-        this.loading = false; // Set loading to false if there's an error
+        this.loading = false;
       }
     );
   }
@@ -117,5 +143,9 @@ export class PetLisitingComponent implements OnInit {
     }
 
     this.lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+  }
+
+  onSearch(): void {
+    this.searchQuerySubject.next(this.searchQuery);
   }
 }

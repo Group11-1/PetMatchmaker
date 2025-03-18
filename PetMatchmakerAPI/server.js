@@ -452,6 +452,22 @@ app.get("/api/pets", async (req, res) => {
   }
 });
 
+// Endpoint to search for pets by name
+app.get("/api/search-pets", async (req, res) => {
+  const searchQuery = req.query.name; // Get the search query from the query parameters
+
+  try {
+    // Call the getSearchedPets function with the search query
+    const pets = await petfinderAPI.getSearchedPets(searchQuery);
+
+    // Send the response back to the client
+    res.json(pets); // You can adjust this to fit your data structure
+  } catch (error) {
+    console.error("Error fetching pets:", error);
+    res.status(500).json({ error: "Failed to fetch pets" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
