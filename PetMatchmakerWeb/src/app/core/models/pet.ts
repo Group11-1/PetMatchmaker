@@ -29,6 +29,7 @@ export interface Address {
 
 export interface Pet {
   id: number;
+  type: string;
   name: string;
   breeds: Breed;
   photos?: Photo[];
@@ -40,4 +41,13 @@ export interface Pet {
   description: string | null;
   status: string;
   contact: Contact;
+}
+
+export interface Breed {
+  name: string;
+  _links: {
+    type: {
+      href: string;
+    };
+  };
 }
