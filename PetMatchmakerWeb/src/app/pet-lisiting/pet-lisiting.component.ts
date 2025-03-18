@@ -37,6 +37,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class PetLisitingComponent implements OnInit {
   pets: Pet[] = [];
+  noPetsFound: boolean = false;
 
   faFilter = faFilter;
   faSearch = faSearch;
@@ -115,7 +116,8 @@ export class PetLisitingComponent implements OnInit {
   }
 
   loadPets(page: number = 1): void {
-    this.loading = true; // Show loading spinner
+    this.loading = true;
+    this.noPetsFound = false;
 
     if (this.searchQuery.trim()) {
       // If search is active, fetch searched pets with pagination
@@ -125,10 +127,12 @@ export class PetLisitingComponent implements OnInit {
           this.currentPage = response.pagination.current_page || 1;
           this.totalPages = response.pagination.total_pages || 1;
           this.loading = false;
+          this.noPetsFound = this.searchedPets.length === 0;
         },
         (error) => {
           console.error('Error searching pets:', error);
           this.loading = false;
+          this.noPetsFound = true;
         }
       );
     } else {
@@ -139,10 +143,12 @@ export class PetLisitingComponent implements OnInit {
           this.currentPage = response.pagination.current_page || 1;
           this.totalPages = response.pagination.total_pages || 1;
           this.loading = false;
+          this.noPetsFound = this.pets.length === 0;
         },
         (error) => {
           console.error('Error fetching pets:', error);
           this.loading = false;
+          this.noPetsFound = true;
         }
       );
     }

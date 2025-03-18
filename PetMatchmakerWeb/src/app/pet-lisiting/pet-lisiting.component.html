@@ -37,8 +37,13 @@
       <div class="spinner"></div>
     </div>
 
+    <!-- No Pets Found Message -->
+    <div *ngIf="noPetsFound && !loading" class="no-pets-found">
+      <p>No Pets Found</p>
+    </div>
+
     <!-- Pet List Grid -->
-    <div *ngIf="!loading" class="pet-list">
+    <div *ngIf="!loading && !noPetsFound" class="pet-list">
       <div
         *ngFor="let pet of searchQuery ? searchedPets : pets"
         class="pet-card"

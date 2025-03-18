@@ -1,10 +1,14 @@
 :host {
   display: block;
   width: 100%;
+  height: 100%;
 }
 
 mat-drawer-container {
   background: transparent;
+  min-height: 100vh; /* Full viewport height */
+  display: flex;
+  flex-direction: column;
 }
 
 body.no-scroll {
@@ -110,7 +114,6 @@ h1 {
 }
 
 /* Pet List Grid */
-
 .pet-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -186,7 +189,7 @@ h1 {
 /* Pagination */
 /* Pagination Container */
 .pagination {
-  margin-top: 20px;
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -215,7 +218,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 200px;
+  height: 100vh;
 }
 
 .spinner {
@@ -234,4 +237,16 @@ h1 {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.no-pets-found {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 1.5rem;
+  color: rgb(175, 175, 175);
+  text-align: center;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
