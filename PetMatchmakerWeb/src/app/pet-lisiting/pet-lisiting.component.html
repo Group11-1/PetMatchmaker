@@ -24,7 +24,8 @@
       <h3>{{ getPetName(pet) }}</h3>
       <p>{{ pet.breeds.primary }}</p>
       <button>Adopt Me</button>
-      <a [href]="pet.url" target="_blank">More Info</a>
+      <!-- Instead of linking to an external URL, open the modal -->
+      <a (click)="openModal(pet)">More Info</a>
     </div>
   </div>
 
@@ -37,3 +38,11 @@
     </button>
   </div>
 </div>
+
+<!-- Pet Card Modal: Displayed when a pet is selected -->
+<app-pet-card
+  *ngIf="selectedPet"
+  [pet]="selectedPet"
+  (closeCard)="closeModal()"
+>
+</app-pet-card>
