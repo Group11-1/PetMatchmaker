@@ -1,0 +1,146 @@
+h1 {
+  position: absolute;
+  left: 80px;
+  width: auto;
+  height: 50px;
+  font-family: "Luckiest Guy";
+}
+.title-bar {
+  position: absolute;
+  left: 60px;
+  width: auto;
+  height: 50px;
+}
+
+/* Aligning elements in menu */
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  left: 10px;
+}
+
+/* Centering main content */
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+/* Dashboard section layout */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  margin-top: 70px;
+}
+
+/* Styling row layout */
+.rows {
+  display: flex;
+  gap: 70px;
+  margin-top: -40px;
+}
+
+/* Box styles */
+.signUps,
+.completed,
+.match {
+  width: 300px; /* Increased from 170px */
+  height: 300px; /* Increased from 150px */
+  border-radius: 10px;
+  box-shadow: 0 0 7px #888888;
+  background-color: white;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+/* Hover effects */
+.signUps:hover,
+.completed:hover,
+.match:hover {
+  box-shadow: 0 0 15px #141414;
+}
+
+/* Text styling */
+label {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 20px;
+}
+
+/* Spacing for text above boxes */
+.topGap {
+  margin-bottom: 8px;
+}
+
+/* Resized pipe */
+.pipe {
+  height: 20px;
+}
+
+/* Container background and dimensions */
+mat-sidenav-container {
+  height: 100vh;
+  background: transparent;
+}
+
+/* Side nav width and background */
+mat-sidenav {
+  width: 250px;
+  background-color: white;
+  border-radius: 0;
+  overflow: hidden;
+  margin-top: 60px;
+}
+
+/* Removing unwanted scrolling */
+mat-sidenav-content {
+  overflow: hidden;
+  padding: 20px;
+}
+
+/* Button styles */
+.button-color {
+  background: none;
+  border: none;
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Side nav item layout */
+mat-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+/* Side nav hover effect */
+mat-list-item:hover {
+  background: linear-gradient(to right, #b6c4f5, #e2e7f8);
+}
+
+mat-list-item img {
+  width: 24px;
+  height: auto;
+}
+
+/* Positioning button text */
+.position {
+  position: relative;
+  bottom: 0;
+  left: 10px;
+  text-align: center; /* Ensures text alignment */
+}
+
+/* Resizing menu icon */
+.menuLogo {
+  width: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.menuLogo:hover {
+  background-color: rgba(190, 190, 190, 0.288);
+}

@@ -1,0 +1,51 @@
+<mat-sidenav-container>
+  <mat-sidenav mode="push" [(opened)]="opened">
+    <mat-list>
+      <mat-list-item>
+        <img src="/assets/img/Dashboard Icon.png" />
+        <button mat-button class="button-color position">Dashboard</button>
+      </mat-list-item>
+      <mat-list-item>
+        <img src="/assets/img/Question Icon.png" />
+        <button mat-button class="button-color position">Questions</button>
+      </mat-list-item>
+      <mat-list-item>
+        <img src="/assets/img/Paw Print.png" />
+        <button mat-button class="button-color position">Pets</button>
+      </mat-list-item>
+      <mat-list-item>
+        <img src="/assets/img/Account Icon.png" />
+        <button mat-button class="button-color position">User Accounts</button>
+      </mat-list-item>
+    </mat-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="dashboard">
+      <div class="menu">
+        <button (click)="opened = !opened" class="button-color">
+          <img src="/assets/img/Menu Icon.png" class="menuLogo" />
+        </button>
+        <img src="/assets/img/Title Bar.png" class="title-bar" />
+        <h1>Dashboard</h1>
+      </div>
+    </div>
+
+    <div class="center">
+      <div class="rows">
+        <div>
+          <label class="topGap">Webpage Signups today</label>
+          <div class="signUps"></div>
+        </div>
+        <div>
+          <label class="topGap">Questionnaires Completed</label>
+          <div class="completed"></div>
+        </div>
+        <div>
+          <label class="topGap">Match Success Rate</label>
+          <div class="completed"></div>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
