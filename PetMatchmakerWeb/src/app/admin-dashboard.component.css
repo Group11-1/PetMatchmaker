@@ -1,185 +1,146 @@
-/*aligning elements: menu icon, pipe, and dashboard(text)*/
-.menu {
-    display: flex;
-    gap: 10px;
-    position: relative;
-    /*top: 80px;*/
-    left: 10px;
+h1 {
+  position: absolute;
+  left: 80px;
+  width: auto;
+  height: 50px;
+  font-family: "Luckiest Guy";
 }
-/*centered container*/
-.center{
+.title-bar {
+  position: absolute;
+  left: 60px;
+  width: auto;
+  height: 50px;
+}
+
+/* Aligning elements in menu */
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  left: 10px;
+}
+
+/* Centering main content */
+.center {
   display: flex;
   align-items: center;
   justify-content: center;
-  height:100%;
+  height: 100vh;
 }
-.dashboard{
-  display:flex;
+
+/* Dashboard section layout */
+.dashboard {
+  display: flex;
   flex-direction: column;
   margin-top: 70px;
 }
-/*displaying box elements in row form*/
-  .rows{
-    display:flex;
-    gap: 70px;
-    margin-top: -60px;
-  }
-/*styling sign up box*/
-  .signUps{
-    width: 170px;
-    height:150px;
-    border-radius: 10px;
-    box-shadow: 0 0 7px #888888 ;
-    background-color: rgb(255, 255, 255);
-    
-    
-  }
-  /*adding hover feature to sign up box*/
-  .signUps:hover{
-    box-shadow: 0 0 15px #141414 ;
-  }
-  /*styling completed questionnaires box*/
-  .completed{
-    width: 170px;
-    height:150px;
-    border-radius: 10px;
-    box-shadow: 0 0 7px #888888 ;
-    background-color: rgb(255, 255, 255);
-    
-  }
-  /*adding hover feature to completed questionnaires box*/
-  .completed:hover{
-    box-shadow: 0 0 15px #141414 ;
-  }
 
-/*styling text*/
-  p {
-    font-family: "Luckiest Guy";
-    font-size: 12px;
-  }
-/*added space above boxes*/
-  .topGap{
-    position:relative;
-    bottom:8px;
-    left: 2px;
-  }
-
-  /*styling match success rate box*/
-  .match{
-    width: 170px;
-    height:150px;
-    border-radius: 10px;
-    box-shadow: 0 0 7px #888888 ;
-    background-color: rgb(255, 255, 255);
-  }
-  /*adding hover feature to match success rate box*/
-  .match:hover{
-    box-shadow: 0 0 15px #141414 ;
-  }
-/*resized pipe*/
- .pipe{
-    height: 20px;
- }
-/*changed background color and added dimensions*/
-mat-sidenav-container {
-    height: 100vh;
-    background-color: rgb(255, 255, 255);
-}
-/*hiding overflowing elements and removed curved corners on the side nav*/
-mat-sidenav {
-    width:100%;
-    border-radius: 0px;
-    overflow: hidden;
-}
-mat-sidenav-content{
-    overflow: hidden;
-    position: relative;
-}
-/*added dimensions to the side nav*/
-mat-sidenav{
-    width:170px;
-    background-color: rgb(255, 255, 255);
-}
-/*removed the default background of the buttons*/
-.button-color{
-    background: none;
-    border:none;
-    font-family: "Neucha", sans-serif;
-    font-size: medium;
-}
-/*adding a fixed amount of space around each listed item*/
-mat-list-item{
+/* Styling row layout */
+.rows {
   display: flex;
-  padding:12px;
+  gap: 70px;
+  margin-top: -40px;
 }
-/*adding hovering effect to list items*/
-mat-list-item:hover{
-  background: linear-gradient(to right, #b6c4f5, #e2e7f8);
+
+/* Box styles */
+.signUps,
+.completed,
+.match {
+  width: 300px; /* Increased from 170px */
+  height: 300px; /* Increased from 150px */
+  border-radius: 10px;
+  box-shadow: 0 0 7px #888888;
+  background-color: white;
+  transition: box-shadow 0.3s ease-in-out;
 }
-/*positioning the text next to the icon in the side nav*/
-.position{
-  position: relative;
-  bottom: 6px;
-  left: 10px;
+
+/* Hover effects */
+.signUps:hover,
+.completed:hover,
+.match:hover {
+  box-shadow: 0 0 15px #141414;
 }
-/*changing menu logo size*/
-.menuLogo{
-  width:20px;
+
+/* Text styling */
+label {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 20px;
 }
-.menuLogo:hover{
-  background-color: rgba(190, 190, 190, 0.288);
+
+/* Spacing for text above boxes */
+.topGap {
+  margin-bottom: 8px;
 }
-/*changing home logo size*/
-.homeLogo{
-  width:27px;
+
+/* Resized pipe */
+.pipe {
+  height: 20px;
 }
-/*side nav font*/
-.sans{
-    font-family: "Neucha", sans-serif;
+
+/* Container background and dimensions */
+mat-sidenav-container {
+  height: 100vh;
+  background: transparent;
 }
-/*pushing elements down in side nav and dash icon, so the top doesn't get cut off*/
-.push-down{
+
+/* Side nav width and background */
+mat-sidenav {
+  width: 250px;
+  background-color: white;
+  border-radius: 0;
+  overflow: hidden;
   margin-top: 60px;
 }
-/*added because the mat nav package blocks the background*/
-.background-image-Paws {
-  position: absolute; /* Ensure it stays in place */
-  top: 50px; /* Adjust based on existing margin */
-  right: 0;
-  left: 0;
-  background-image: url("/assets/img/[Background] Paw Prints.png");
-  background-position: right top;
-  background-repeat: no-repeat;
-  background-size: contain;
-  width: 100%;
-  height: 300px;
-  z-index: -1;
-}
-/*added because the mat nav package blocks the background*/
-.background-image-Cat,
-.background-image-Dog {
-  background-repeat: no-repeat;
-  background-size: contain;
-  width: 50%;
-  height: 300px;
-  position: absolute;
-}
-/*added because the mat nav package blocks the background*/
-.background-image-Paws,
-.container,
-.background-image-Cat,
-.background-image-Dog {
-  z-index: -1;
-}
-@media (max-width: 768px) {
-  .background-image-Paws,
-  .container {
-    display: none;
-  }
+
+/* Removing unwanted scrolling */
+mat-sidenav-content {
+  overflow: hidden;
+  padding: 20px;
 }
 
-@media (max-width: 1100px) {
-  .background-image-Dog {
-    display: none;
-  }
+/* Button styles */
+.button-color {
+  background: none;
+  border: none;
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Side nav item layout */
+mat-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+/* Side nav hover effect */
+mat-list-item:hover {
+  background: linear-gradient(to right, #b6c4f5, #e2e7f8);
+}
+
+mat-list-item img {
+  width: 24px;
+  height: auto;
+}
+
+/* Positioning button text */
+.position {
+  position: relative;
+  bottom: 0;
+  left: 10px;
+  text-align: center; /* Ensures text alignment */
+}
+
+/* Resizing menu icon */
+.menuLogo {
+  width: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.menuLogo:hover {
+  background-color: rgba(190, 190, 190, 0.288);
 }
