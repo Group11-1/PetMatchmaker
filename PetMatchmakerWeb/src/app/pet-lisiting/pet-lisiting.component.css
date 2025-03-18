@@ -3,6 +3,10 @@
   width: 100%;
 }
 
+mat-drawer-container {
+  background: transparent;
+}
+
 body.no-scroll {
   overflow: hidden;
 }

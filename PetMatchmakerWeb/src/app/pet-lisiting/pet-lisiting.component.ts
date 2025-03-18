@@ -69,16 +69,28 @@ export class PetLisitingComponent implements OnInit {
     // Subscribe to search query changes and fetch pets dynamically
     this.searchQuerySubject
       .pipe(
-        debounceTime(300), // Wait for user to stop typing for 300ms
-        distinctUntilChanged(), // Only search if the query changes
-        switchMap((query) => this.petService.searchPets(query)) // Perform API call to search pets
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((query) => {
+          if (query.trim()) {
+            return this.petService.searchPets(query, 1); // Fetch searched pets
+          } else {
+            return this.petService.getPets(1); // Fetch all pets if query is empty
+          }
+        })
       )
       .subscribe(
         (response) => {
-          this.searchedPets = response.animals || []; // Update searchedPets with API response
+          if (this.searchQuery.trim()) {
+            this.searchedPets = response.animals || [];
+          } else {
+            this.pets = response.animals || [];
+          }
+          this.currentPage = response.pagination.current_page || 1;
+          this.totalPages = response.pagination.total_pages || 1;
         },
         (error) => {
-          console.error('Error searching pets:', error);
+          console.error('Error fetching pets:', error);
         }
       );
   }
@@ -103,21 +115,37 @@ export class PetLisitingComponent implements OnInit {
   }
 
   loadPets(page: number = 1): void {
-    this.loading = true;
-    this.petService.getPets(page).subscribe(
-      (response: any) => {
-        console.log('API Response:', response);
-        this.pets = response.animals || [];
-        this.currentPage = response.pagination.current_page || 1;
-        this.totalPages = response.pagination.total_pages || 1;
-        this.loading = false;
-        this.searchedPets = this.pets;
-      },
-      (error) => {
-        console.error('Error fetching pets:', error);
-        this.loading = false;
-      }
-    );
+    this.loading = true; // Show loading spinner
+
+    if (this.searchQuery.trim()) {
+      // If search is active, fetch searched pets with pagination
+      this.petService.searchPets(this.searchQuery, page).subscribe(
+        (response: any) => {
+          this.searchedPets = response.animals || [];
+          this.currentPage = response.pagination.current_page || 1;
+          this.totalPages = response.pagination.total_pages || 1;
+          this.loading = false;
+        },
+        (error) => {
+          console.error('Error searching pets:', error);
+          this.loading = false;
+        }
+      );
+    } else {
+      // Otherwise, fetch all pets with pagination
+      this.petService.getPets(page).subscribe(
+        (response: any) => {
+          this.pets = response.animals || [];
+          this.currentPage = response.pagination.current_page || 1;
+          this.totalPages = response.pagination.total_pages || 1;
+          this.loading = false;
+        },
+        (error) => {
+          console.error('Error fetching pets:', error);
+          this.loading = false;
+        }
+      );
+    }
   }
 
   //Shorten Name if needed

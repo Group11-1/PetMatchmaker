@@ -39,7 +39,10 @@
 
     <!-- Pet List Grid -->
     <div *ngIf="!loading" class="pet-list">
-      <div *ngFor="let pet of searchedPets" class="pet-card">
+      <div
+        *ngFor="let pet of searchQuery ? searchedPets : pets"
+        class="pet-card"
+      >
         <a [href]="pet.url" target="_blank">
           <img [src]="getImageUrl(pet)" [alt]="pet.name" class="pet-image" />
         </a>

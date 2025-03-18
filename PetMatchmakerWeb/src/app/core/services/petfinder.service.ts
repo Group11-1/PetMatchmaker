@@ -15,8 +15,9 @@ export class PetService {
   }
 
   // Method to search pets by name
-  searchPets(searchQuery: string): Observable<any> {
-    const params = new HttpParams().set('name', searchQuery);
-    return this.http.get<any>(`${this.apiUrl}/search-pets`, { params });
+  searchPets(name: string, page: number = 1): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrl}/searchPets?name=${name}&page=${page}`
+    );
   }
 }
