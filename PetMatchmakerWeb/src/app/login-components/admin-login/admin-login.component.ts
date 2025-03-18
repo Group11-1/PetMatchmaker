@@ -28,12 +28,10 @@ export class AdminLoginComponent {
         if (response.role_id === 1) {
           // Save the token
           this.authService.saveToken(response.token);
-
           // Store role
           localStorage.setItem('role', response.role_id.toString());
-
           // Redirect to the admin dashboard
-          this.router.navigate(['/questionnaire']);
+          this.router.navigate(['/admin-dashboard']);
         } else {
           alert('Access denied! You must be an admin to log in.');
         }

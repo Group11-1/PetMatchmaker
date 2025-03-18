@@ -1,0 +1,155 @@
+<mat-drawer-container class="example-container">
+  <!-- Overlay background for the drawer -->
+  <div *ngIf="drawer.opened" class="overlay" (click)="drawer.toggle()"></div>
+
+  <!-- Side Drawer (Drawer that slides from the left) -->
+  <mat-drawer #drawer class="example-sidenav" mode="side" position="start">
+    <mat-nav-list>
+      <h3>Filters</h3>
+
+      <!-- Animal Selection - Checkboxes (Side by side) -->
+      <label class="section-title">Animal Type</label>
+      <div class="checkbox-group">
+        <div *ngFor="let animal of animalTypes" class="checkbox-item">
+          <input
+            type="checkbox"
+            [value]="animal"
+            (change)="onAnimalTypeChange($event)"
+            [checked]="selectedAnimalTypes.includes(animal)"
+          />
+          <label>{{ animal }}</label>
+        </div>
+      </div>
+
+      <!-- Breed Selection - Dropdown (Always visible) -->
+      <div class="dropdown">
+        <label>Breed Selection</label>
+        <select
+          [(ngModel)]="selectedBreed"
+          class="dropdown-select"
+          [disabled]="selectedAnimalTypes.length === 0"
+        >
+          <option *ngFor="let breed of breeds" [value]="breed">
+            {{ breed }}
+          </option>
+        </select>
+        <!-- Error message if no animal type is selected -->
+        <div *ngIf="selectedAnimalTypes.length === 0" class="error-message">
+          Please select an animal type before choosing a breed.
+        </div>
+      </div>
+
+      <!-- Gender Selection - Checkboxes (Side by side) -->
+      <label>Gender</label>
+      <div class="checkbox-group">
+        <div *ngFor="let gender of genders" class="checkbox-item">
+          <input
+            type="checkbox"
+            [value]="gender"
+            (change)="onGenderChange($event)"
+            [checked]="selectedGender.includes(gender)"
+          />
+          <label>{{ gender }}</label>
+        </div>
+      </div>
+
+      <!-- Size Selection - Dropdown -->
+      <div class="dropdown">
+        <label>Size</label>
+        <select [(ngModel)]="selectedSize" class="dropdown-select">
+          <option *ngFor="let size of sizes" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+
+      <!-- Age Selection - Dropdown -->
+      <div class="dropdown">
+        <label>Age</label>
+        <select [(ngModel)]="selectedAge" class="dropdown-select">
+          <option *ngFor="let age of ages" [value]="age">{{ age }}</option>
+        </select>
+      </div>
+
+      <!-- Filters Button -->
+      <div class="button-container">
+        <button class="apply-button" (click)="onFilterChange()">
+          Apply Filters
+        </button>
+        <button class="reset-button" (click)="resetFilters()">
+          Reset Filters
+        </button>
+      </div>
+    </mat-nav-list>
+  </mat-drawer>
+
+  <!-- Main Content Area -->
+  <div class="pet-list-container">
+    <img src="/assets/img/Title Bar.png" class="title-bar" />
+    <h1>Adoptable Friends Await!</h1>
+
+    <!-- Filter and Search Section -->
+    <div class="filter-search-container">
+      <button class="filter-btn" (click)="drawer.toggle()">
+        <fa-icon [icon]="faFilter"></fa-icon> Filter
+      </button>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (input)="onSearch()"
+        placeholder="Search..."
+        class="search-field"
+      />
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="spinner-container">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- No Pets Found Message -->
+    <div *ngIf="noPetsFound && !loading" class="no-pets-found">
+      <p>No Pets Found</p>
+    </div>
+
+    <!-- Pet List Grid -->
+    <div *ngIf="!loading && !noPetsFound" class="pet-list">
+      <!-- Check if there is a search query, if not, fallback to filteredPets or pets -->
+      <div
+        *ngFor="
+          let pet of searchQuery
+            ? searchedPets
+            : filteredPets.length
+            ? filteredPets
+            : pets
+        "
+        class="pet-card"
+      >
+        <a [href]="pet.url" target="_blank">
+          <img [src]="getImageUrl(pet)" [alt]="pet.name" class="pet-image" />
+        </a>
+        <h3>{{ getPetName(pet) }}</h3>
+        <p>{{ pet.breeds.primary }}</p>
+        <button>Adopt Me</button>
+        <a (click)="openModal(pet)">More Info</a>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">
+        ← Back
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next →
+      </button>
+    </div>
+  </div>
+</mat-drawer-container>
+
+<!-- Pet Card Modal: Displayed when a pet is selected -->
+<app-pet-card
+  *ngIf="selectedPet"
+  [pet]="selectedPet"
+  (closeCard)="closeModal()"
+>
+</app-pet-card>

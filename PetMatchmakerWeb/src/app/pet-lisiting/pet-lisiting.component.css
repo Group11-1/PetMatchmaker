@@ -1,0 +1,377 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+mat-drawer-container {
+  background: transparent;
+  min-height: 100vh; /* Full viewport height */
+  display: flex;
+  flex-direction: column;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+.example-container {
+  position: relative;
+  height: 100%;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  pointer-events: all;
+}
+
+.overlay.visible {
+  display: block;
+}
+
+.example-sidenav {
+  margin-top: 60px;
+  width: 500px;
+  background-color: white;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  left: -250px;
+  height: 100%;
+  transition: transform 0.3s ease;
+  z-index: 200;
+}
+
+.example-sidenav.mat-drawer-opened {
+  left: 0;
+}
+
+/* Ensure pet list is not hidden behind header */
+.pet-list-container {
+  margin-top: 100px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.example-sidenav.mat-drawer-opened + .pet-list-container {
+  margin-left: 250px;
+}
+
+.title-bar {
+  position: absolute;
+  left: 20px;
+  width: auto;
+  height: 50px;
+}
+
+h1 {
+  position: absolute;
+  left: 40px;
+  width: auto;
+  height: 50px;
+  font-family: "Luckiest Guy";
+}
+
+/* Filter & Search Container */
+.filter-search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 20px;
+  padding-top: 60px;
+}
+
+/* Filter Button */
+.filter-btn {
+  font-family: "Luckiest Guy", cursive;
+  background-color: #fff3e1;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid black;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.filter-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Search Field */
+.search-field {
+  padding: 8px;
+  width: 200px;
+  border-radius: 5px;
+  border: 1px solid gray;
+}
+
+/* Pet List Grid */
+.pet-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Pet Card Styling */
+.pet-card {
+  width: 200px;
+  height: 300px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Hover Effect */
+.pet-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Pet Image */
+.pet-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Pet Name */
+.pet-card h3 {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 1.2rem;
+  margin: 5px 0;
+}
+
+/* Pet Breed */
+.pet-card p,
+.pet-card a,
+.pagination span {
+  font-family: "Neucha", cursive;
+  font-size: 1rem;
+  margin: 5px 0;
+  color: black;
+  text-decoration: none;
+}
+
+.pet-card a:hover {
+  text-decoration: underline;
+}
+
+/* Adopt Me Button */
+.pet-card button {
+  font-family: "Luckiest Guy", cursive;
+  background-color: #d4f4d4;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Pagination */
+/* Pagination Container */
+.pagination {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+/* Pagination Buttons */
+.pagination button {
+  font-family: "Luckiest Guy", cursive;
+  background-color: #f4f4f4;
+  border: 2px solid black;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.pagination button:hover {
+  transform: translateY(-5px);
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.no-pets-found {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 1.5rem;
+  color: rgb(175, 175, 175);
+  text-align: center;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+mat-nav-list {
+  font-family: "Luckiest Guy", sans-serif;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+/* Centering the Filters header */
+mat-nav-list h3 {
+  text-align: center;
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 20px;
+  margin-bottom: 20px; /* Optional: Adjust spacing as needed */
+}
+
+/* Section Title (e.g., Animal Type, Gender, etc.) */
+.section-title {
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 18px;
+  margin-top: 20px; /* Adds space above section titles */
+  margin-bottom: 10px; /* Adds space below section titles */
+}
+
+/* Checkbox Group - Side by Side */
+.checkbox-group {
+  display: flex;
+  flex-direction: row; /* Change from column to row for side-by-side */
+  gap: 10px; /* Adds space between checkboxes */
+  flex-wrap: wrap; /* Allows wrapping if there are too many checkboxes */
+  margin-bottom: 20px; /* Adds space below checkbox section */
+}
+
+.checkbox-group div {
+  display: flex;
+  align-items: center; /* Ensures that checkboxes and labels are vertically centered */
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 5px; /* Adds space between checkbox and label */
+}
+
+.checkbox-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Label for Checkboxes - Apply Neucha font */
+.checkbox-item label {
+  font-family: "Neucha", sans-serif;
+  font-size: 16px;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  margin-bottom: 20px; /* Adds space below each dropdown section */
+}
+
+.dropdown-select {
+  padding: 8px;
+  width: 100%;
+  font-family: "Neucha", sans-serif;
+  font-size: 14px;
+}
+
+/* Button Styles */
+.apply-button,
+.reset-button {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s; /* Added transition for shadow */
+  margin-top: 20px; /* Adds space above the button */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a soft shadow */
+}
+
+/* Button Hover Styles */
+.apply-button:hover,
+.reset-button:hover {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow on hover */
+}
+
+.button-container {
+  display: flex;
+  gap: 10px; /* Adds space between the buttons */
+}
+
+.apply-button {
+  background-color: #d4f4d4;
+}
+
+.apply-button:hover {
+  background-color: #a2e1a2;
+}
+
+.reset-button {
+  background-color: #f3e2f8;
+}
+
+.reset-button:hover {
+  background-color: #dacbdf;
+}
+
+/* Label Styles for all labels in filter sections */
+label {
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 16px;
+  display: block; /* Ensures labels are displayed in their own lines */
+  margin-bottom: 5px; /* Adds space between label and input/select */
+}
+
+/* Ensuring consistency for the font family of options in dropdowns */
+option {
+  font-family: "Neucha", sans-serif;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  font-family: "Neucha", sans-serif;
+}
