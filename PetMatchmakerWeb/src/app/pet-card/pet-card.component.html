@@ -1,0 +1,67 @@
+<!-- Modal Overlay -->
+<div class="modal-overlay">
+  <!-- The Card Popup -->
+  <div class="card-popup">
+    <button class="close-button" (click)="onClose()">X</button>
+
+    <!-- Header Section -->
+    <div class="header-container">
+      <!-- Left Column: Pet Image, Name, Breed -->
+      <div class="left-column">
+        <img class="pet-image" [src]="petImage" alt="{{ pet.name }}" />
+        <div class="view-gallery">View Gallery</div>
+        <h2 class="pet-name">{{ pet.name }}</h2>
+        <p class="pet-breed">{{ pet.breeds.primary }}</p>
+      </div>
+
+      <!-- Right Column: Pet Stats and About -->
+      <div class="right-column">
+        <!-- Pet Stats -->
+        <div class="pet-stats">
+          <div class="stat-item">
+            <span class="stat-label">Age</span>
+            <span class="stat-value">{{ pet.age }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Size</span>
+            <span class="stat-value">{{ pet.size }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Gender</span>
+            <span class="stat-value">{{ pet.gender }}</span>
+          </div>
+        </div>
+        <!-- About Section -->
+        <div class="about-section">
+          <h3>About {{ pet.name }}</h3>
+          <p>{{ pet.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Container: Icon + Box pairs -->
+    <div class="info-container">
+      <div class="info-wrapper">
+        <img class="info-icon" src="../../assets/img/behavior.png" alt="Behavior Icon" />
+        <div class="info-box activity-level">
+          <h4>Activity Level</h4>
+          <p>[Placeholder]</p>
+        </div>
+      </div>
+      <div class="info-wrapper">
+        <img class="info-icon" src="../../assets/img/health.png" alt="Health Icon" />
+        <div class="info-box social-behavior">
+          <h4>Social Behavior</h4>
+          <p>[Placeholder]</p>
+        </div>
+      </div>
+      <div class="info-wrapper">
+        <img class="info-icon" src="../../assets/img/lifestyle.png" alt="Lifestyle Icon" />
+        <div class="info-box training-level">
+          <h4>Training Level</h4>
+          <p>[Placeholder]</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

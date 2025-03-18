@@ -8,10 +8,11 @@ import {
 } from '@angular/core';
 import { PetService } from '../core/services/petfinder.service';
 import { Pet } from '../core/models/pet';
-import { Breed } from '../core/models/pet';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilter, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { PetCardComponent } from '../pet-card/pet-card.component';
+import { Breed } from '../core/models/pet';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -26,6 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [
     CommonModule,
     FontAwesomeModule,
+    PetCardComponent,
     FormsModule,
     MatSidenavModule,
     MatListModule,
@@ -36,8 +38,9 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './pet-lisiting.component.html',
   styleUrl: './pet-lisiting.component.css',
 })
-export class PetLisitingComponent implements OnInit {
+export class PetLisitingComponent {
   pets: Pet[] = [];
+  selectedPet: Pet | null = null;
   noPetsFound: boolean = false;
 
   faFilter = faFilter;
@@ -338,5 +341,13 @@ export class PetLisitingComponent implements OnInit {
 
   onBreedDropdownClick() {
     this.hasClickedBreed = true;
+  }
+
+  openModal(pet: Pet): void {
+    this.selectedPet = pet;
+  }
+
+  closeModal(): void {
+    this.selectedPet = null;
   }
 }
