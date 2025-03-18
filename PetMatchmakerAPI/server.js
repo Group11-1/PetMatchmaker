@@ -429,10 +429,51 @@ app.get("/api/questionnaire/progress/:userId", (req, res) => {
 
 app.get("/api/pets", async (req, res) => {
   try {
-    const data = await petfinderAPI.getAvailablePets();
-    res.json(data);
+    const page = req.query.page || 1; // Default to page 1 if not provided
+    const data = await petfinderAPI.getAvailablePets(page);
+
+    res.json({
+      animals: data.animals,
+      pagination: {
+        current_page: data.pagination.current_page,
+        total_pages: data.pagination.total_pages,
+        next_page:
+          data.pagination.current_page < data.pagination.total_pages
+            ? `/api/pets?page=${data.pagination.current_page + 1}`
+            : null,
+        prev_page:
+          data.pagination.current_page > 1
+            ? `/api/pets?page=${data.pagination.current_page - 1}`
+            : null,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch pets" });
+  }
+});
+
+// Endpoint to search for pets by name
+app.get("/api/searchPets", async (req, res) => {
+  try {
+    const { name, page = 1 } = req.query;
+    const response = await petfinderAPI.getSearchedPets(name, page);
+    res.json(response);
+  } catch (error) {
+    console.error("Error searching for pets:", error);
+    res.status(500).json({ error: "Failed to search for pets" });
+  }
+});
+
+// Endpoint to get breeds for a specific animal type
+app.get("/api/breeds/:type", async (req, res) => {
+  try {
+    const animalType = req.params.type; // Get animal type (dog, cat, etc.)
+    const breeds = await petfinderAPI.getBreedsByType(animalType); // Call the function that fetches breeds from Petfinder
+
+    res.json({ breeds }); // Send the breeds back to the frontend
+  } catch (error) {
+    console.error("Error fetching breeds:", error);
+    res.status(500).json({ error: "Failed to fetch breeds" });
   }
 });
 

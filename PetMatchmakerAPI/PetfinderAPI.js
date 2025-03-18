@@ -35,13 +35,16 @@ async function getAccessToken() {
 }
 
 // Fetch available pets
-async function getAvailablePets() {
+async function getAvailablePets(page = 1) {
   try {
     const token = await getAccessToken();
-    const response = await fetch("https://api.petfinder.com/v2/animals", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `https://api.petfinder.com/v2/animals?page=${page}`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
     return await response.json();
   } catch (error) {
@@ -50,10 +53,59 @@ async function getAvailablePets() {
   }
 }
 
+// Fetch searched pets, with optional search query
+async function getSearchedPets(searchQuery = "", page = 1) {
+  try {
+    const token = await getAccessToken();
+
+    // Construct URL with searchQuery and page
+    let url = `https://api.petfinder.com/v2/animals?page=${page}`;
+    if (searchQuery) {
+      url += `&name=${encodeURIComponent(searchQuery)}`; // Add name search parameter
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching searched pets:", error);
+    throw error;
+  }
+}
+
+// Fetch breeds by animal type
+async function getBreedsByType(animalType) {
+  try {
+    const token = await getAccessToken();
+    const response = await fetch(
+      `https://api.petfinder.com/v2/types/${animalType}/breeds`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch breeds for type: ${animalType}`);
+    }
+
+    const data = await response.json();
+    return data.breeds;
+  } catch (error) {
+    console.error("Error fetching breeds:", error);
+    throw error;
+  }
+}
+
 // Export all functions as a single object
 const petfinderAPI = {
   getAccessToken,
   getAvailablePets,
+  getSearchedPets,
+  getBreedsByType,
 };
 
 module.exports = petfinderAPI;
