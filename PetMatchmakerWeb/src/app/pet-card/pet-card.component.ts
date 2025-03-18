@@ -1,31 +1,31 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { PetService, Pet } from '../services/pet.service';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Pet } from '../core/models/pet'; // Adjust path as needed
+import { CommonModule } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-pet-card',
+  standalone: true,
+  imports: [CommonModule, FontAwesomeModule],
   templateUrl: './pet-card.component.html',
   styleUrls: ['./pet-card.component.css']
 })
 export class PetCardComponent implements OnInit {
+  @Input() pet!: Pet;
   @Output() closeCard = new EventEmitter<void>();
 
-  pet: Pet | null = null;
+  constructor() {}
 
-  constructor(private petService: PetService) { }
-
-  ngOnInit(): void {
-    // For demonstration, we fetch the list of pets and use the first one.
-    this.petService.getPets().subscribe(
-      data => {
-        if (data && data.animals && data.animals.length > 0) {
-          this.pet = data.animals[0];
-        }
-      },
-      error => console.error('Error fetching pet data:', error)
-    );
-  }
+  ngOnInit(): void {}
 
   onClose(): void {
     this.closeCard.emit();
+  }
+
+  get petImage(): string {
+    if (this.pet && this.pet.photos && this.pet.photos.length > 0 && this.pet.photos[0].medium) {
+      return this.pet.photos[0].medium;
+    }
+    return 'https://via.placeholder.com/150';
   }
 }
