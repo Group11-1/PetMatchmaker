@@ -4,7 +4,7 @@ import { Pet } from '../core/models/pet';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilter, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { PetCardComponent } from '../pet-card/pet-card.component'; // Import Pet Card modal
+import { PetCardComponent } from '../pet-card/pet-card.component';
 
 @Component({
   selector: 'app-pet-lisiting',
@@ -51,7 +51,7 @@ export class PetLisitingComponent implements OnInit {
     );
   }
 
-  // Optionally shorten the pet name if needed.
+  // Shorten Name if needed.
   getPetName(pet: any): string {
     const nameParts = pet.name.split(' ');
     if (nameParts.length > 1) {
@@ -60,7 +60,7 @@ export class PetLisitingComponent implements OnInit {
     return pet.name;
   }
 
-  // Determine a valid image URL for the pet.
+  //Get a valid pet image
   getImageUrl(pet: any): string {
     const primaryPhoto = pet.primary_photo_cropped;
     if (primaryPhoto) {
@@ -106,12 +106,10 @@ export class PetLisitingComponent implements OnInit {
     this.lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
   }
 
-  // When a user clicks "More Info", set the selected pet.
   openModal(pet: Pet): void {
     this.selectedPet = pet;
   }
 
-  // Close the modal by clearing the selected pet.
   closeModal(): void {
     this.selectedPet = null;
   }
