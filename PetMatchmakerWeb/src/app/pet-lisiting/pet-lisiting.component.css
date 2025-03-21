@@ -232,6 +232,7 @@ h1 {
   align-items: center;
   text-align: center;
   font-size: 14px;
+  font-family: "Neucha", sans-serif;
 }
 
 .modal-content {
@@ -247,7 +248,7 @@ h1 {
   border-radius: 25px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   background: linear-gradient(to right, #b6c4f5, #e2e7f8);
-  font-family: "Luckiest Guy", sans-serif;
+  font-family: "Neucha", sans-serif;
 }
 
 .modal-content button:hover {
